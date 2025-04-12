@@ -1,6 +1,6 @@
 {
-  "name": "com.actioncode.[packagename]",
-  "displayName": "ActionCode-[PackageName]",
+  "name": "com.actioncode.game-data-system",
+  "displayName": "ActionCode-Game Data System",
   "version": "0.1.0",
   "unity": "2019.3",
   "description": "This package contains [...].",
@@ -10,13 +10,13 @@
   ],
   "dependencies": {},
   "license": "MIT",
-  "homepage": "https://github.com/HyagoOliveira/[PACKAGE]#readme",
+  "homepage": "https://github.com/HyagoOliveira/GameDataSystem#readme",
   "repository": {
     "type": "git",
-    "url": "https://github.com/HyagoOliveira/[PACKAGE].git"
+    "url": "https://github.com/HyagoOliveira/GameDataSystem.git"
   },
-  "documentationUrl": "https://github.com/HyagoOliveira/[PACKAGE]#readme",
-  "changelogUrl": "https://github.com/HyagoOliveira/[PACKAGE]/CHANGELOG.md",
+  "documentationUrl": "https://github.com/HyagoOliveira/GameDataSystem#readme",
+  "changelogUrl": "https://github.com/HyagoOliveira/GameDataSystem/CHANGELOG.md",
   "author": {
     "name": "Hyago Oliveira",
     "email": "hyagogow@gmail.com"
