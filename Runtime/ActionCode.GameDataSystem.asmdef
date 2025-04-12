@@ -1,0 +1,26 @@
+{
+    "name": "ActionCode.DataSystem",
+    "rootNamespace": "ActionCode.GameDataSystem",
+    "references": [
+        "GUID:a3c5f966aeca34e4c9b14669f41a5c93",
+        "GUID:97b1f0f13e154439ba5fea6e086de8af",
+        "GUID:fe25561d224ed4743af4c60938a59d0b",
+        "GUID:be0d2672886cc45b2bcea5a5053a5347",
+        "GUID:23eed6c2401dca1419d1ebd180e58c5a"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [
+        {
+            "name": "com.unity.services.cloudsave",
+            "expression": "1.0.0",
+            "define": "UNITY_CLOUD_SAVE"
+        }
+    ],
+    "noEngineReferences": false
+}
