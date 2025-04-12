@@ -6,8 +6,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
-## [0.1.0] - 2022-01-01
+## [0.1.0] - 2025-04-12
 ### Added
+- Initial scripts
 - CHANGELOG
 - Package file
 - README
@@ -15,5 +16,5 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - gitignore
 - Initial commit
 
-[Unreleased]: https://github.com/HyagoOliveira/[PACKAGE]/compare/0.1.0...main
-[0.1.0]: https://github.com/HyagoOliveira/[PACKAGE]/tree/0.1.0/
+[Unreleased]: https://github.com/HyagoOliveira/GameDataSystem/compare/0.1.0...main
+[0.1.0]: https://github.com/HyagoOliveira/GameDataSystem/tree/0.1.0/

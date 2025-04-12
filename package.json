@@ -3,7 +3,7 @@
   "displayName": "ActionCode-Game Data System",
   "version": "0.1.0",
   "unity": "2019.3",
-  "description": "This package contains [...].",
+  "description": "Game Data Serialization.",
   "keywords": [
     "",
     ""
