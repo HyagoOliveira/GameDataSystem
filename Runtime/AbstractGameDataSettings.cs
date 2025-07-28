@@ -1,5 +1,5 @@
-using TNRD;
 using UnityEngine;
+using System;
 using System.Linq;
 using System.Collections;
 using System.Threading.Tasks;
@@ -11,7 +11,6 @@ namespace ActionCode.GameDataSystem
     {
         [SerializeField] private T gameData;
         [SerializeField] private PersistenceSettings persistenceSettings;
-        [SerializeField] private SerializableInterface<ICloudProvider> cloudProvider;
 
         /// <summary>
         /// The Game main data.
@@ -24,6 +23,8 @@ namespace ActionCode.GameDataSystem
         public PersistenceSettings Serialization => persistenceSettings;
 
         public ICloudProvider CloudProvider => cloudProvider.Value;
+
+        private readonly Lazy<ICloudProvider> cloudProvider = new(GetavailableCloudProvider);
 
         public bool HasCloudProvider() => CloudProvider != null;
 
@@ -138,5 +139,9 @@ namespace ActionCode.GameDataSystem
             var data = CreateInstance<T>();
             return await persistenceSettings.TryLoadLastSlot(data);
         }
+
+        // The only available Cloud provider for now is from Unity Service.
+        // No need to have others for now.
+        private static ICloudProvider GetavailableCloudProvider() => new UnityCloudService();
     }
 }
