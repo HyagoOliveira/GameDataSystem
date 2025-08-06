@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.UIElements;
 using ActionCode.UISystem;
+using System.Collections;
 
 namespace ActionCode.GameDataSystem
 {
@@ -14,10 +15,14 @@ namespace ActionCode.GameDataSystem
 
         [Header("Data Names")]
         [SerializeField] private string dataDetailsName = "DataDetails";
+        [SerializeField] private string availableDataContainerName = "AvailableData";
+        [SerializeField] private string unavalibleDataContainerName = "UnavailableData";
 
         public event Action OnDataLoaded;
 
         public VisualElement DataDetails { get; private set; }
+        public VisualElement AvailableDataContainer { get; private set; }
+        public VisualElement UnavailableDataContainer { get; private set; }
 
         protected override void Reset()
         {
@@ -37,6 +42,8 @@ namespace ActionCode.GameDataSystem
         {
             base.FindReferences();
             DataDetails = Find<VisualElement>(dataDetailsName);
+            AvailableDataContainer = Find<VisualElement>(availableDataContainerName);
+            UnavailableDataContainer = Find<VisualElement>(unavalibleDataContainerName);
         }
 
         protected override void SubscribeEvents()
@@ -63,23 +70,29 @@ namespace ActionCode.GameDataSystem
 
         private async void LoadLocalDataAsync()
         {
-            SetDataDetailsVisibility(false);
+            AvailableDataContainer.SetDisplayEnabled(false);
+            UnavailableDataContainer.SetDisplayEnabled(false);
 
             var data = await gameDataSettings.ListSlotsAsync();
-            list.SetSource(data);
+            var hasData = data.Count > 0;
 
-            SetDataDetailsVisibility(true);
+            if (hasData) ShowAvailableData(data);
+            else ShowUnavailableData();
         }
+
+        private void ShowAvailableData(IList data)
+        {
+            list.SetSource(data);
+            AvailableDataContainer.SetDisplayEnabled(true);
+        }
+
+        private void ShowUnavailableData() =>
+            UnavailableDataContainer.SetDisplayEnabled(true);
 
         private string GetDataText(object item) => item.ToString();
         private string GetDataName(object item) => $"data-slot-{GetData(item).SlotIndex}";
 
-        private void HandleDataSelected(object item)
-        {
-            UpdateSelectedDataContent(GetData(item));
-            SetDataDetailsVisibility(true);
-        }
-
+        private void HandleDataSelected(object item) => UpdateSelectedDataContent(GetData(item));
         private void HandleDataConfirmed(object _) => OnDataLoaded?.Invoke();
 
         /*
