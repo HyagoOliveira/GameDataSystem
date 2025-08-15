@@ -6,9 +6,16 @@ using System.Collections;
 
 namespace ActionCode.GameDataSystem
 {
+    /// <summary>
+    /// Abstract controller for a generic Load Game Screen.
+    /// <para>
+    /// This Screen can list, load and delete save files.
+    /// </para>
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     [DisallowMultipleComponent]
     [RequireComponent(typeof(ListController))]
-    public abstract class AbstractLoadGameController<T> : AbstractController where T : AbstractGameData
+    public abstract class AbstractLoadGameScreen<T> : AbstractController where T : AbstractGameData
     {
         [SerializeField] private ListController list;
         [SerializeField] protected AbstractGameDataSettings<T> gameDataSettings;
