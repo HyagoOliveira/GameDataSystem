@@ -15,7 +15,7 @@ namespace ActionCode.GameDataSystem
     /// <typeparam name="T"></typeparam>
     [DisallowMultipleComponent]
     [RequireComponent(typeof(ListController))]
-    public abstract class AbstractLoadGameScreen<T> : AbstractController where T : AbstractGameData
+    public abstract class AbstractLoadGameScreen<T> : AbstractMenuScreen where T : AbstractGameData
     {
         [SerializeField] private ListController list;
         [SerializeField] protected AbstractGameDataSettings<T> gameDataSettings;
