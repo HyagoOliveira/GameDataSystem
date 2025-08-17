@@ -18,7 +18,6 @@ namespace ActionCode.GameDataSystem
         Task<bool> TryDeleteAsync(int slot);
         Task<bool> TryDeleteAllAsync();
 
-        Task<IList> ListDataAsync();
         Task<IList> LoadAllRemotelyAsync(string playerId);
     }
 }

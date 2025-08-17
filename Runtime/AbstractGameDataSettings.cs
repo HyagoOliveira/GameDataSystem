@@ -7,7 +7,7 @@ using ActionCode.Persistence;
 
 namespace ActionCode.GameDataSystem
 {
-    public abstract class AbstractGameDataSettings<T> : ScriptableObject where T : AbstractGameData
+    public abstract class AbstractGameDataSettings<T> : ScriptableObject, IDataModel where T : AbstractGameData
     {
         [SerializeField] private T gameData;
         [SerializeField] private PersistenceSettings persistenceSettings;
@@ -75,7 +75,7 @@ namespace ActionCode.GameDataSystem
 
         public async Task<bool> TryDeleteAsync(int slot)
         {
-            await CloudProvider?.DeleteAsync(persistenceSettings.GetSlotName(slot));
+            //await CloudProvider?.DeleteAsync(persistenceSettings.GetSlotName(slot));
             return TryDeleteLocally(slot);
         }
 
