@@ -54,6 +54,7 @@ namespace ActionCode.GameDataSystem
 
         protected abstract void UpdateSelectedDataContent(T data);
 
+        public override void ResetGameData() => gameDataSettings.Data.ResetData();
         public override async Awaitable LoadFromLastSlotAsync() => await gameDataSettings.LoadFromLastSlotAsync();
 
         protected override void FindReferences()

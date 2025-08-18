@@ -18,6 +18,14 @@ namespace ActionCode.GameDataSystem
             LastUpdate = DateTime.Now;
         }
 
+        public virtual void ResetData()
+        {
+            var className = GetType().Name;
+            var data = CreateInstance(className);
+            var json = JsonUtility.ToJson(data);
+            JsonUtility.FromJsonOverwrite(json, this);
+        }
+
         public virtual string GetDisplayName() => $"Slot {SlotIndex}";
         public override string ToString() => GetDisplayName();
     }
