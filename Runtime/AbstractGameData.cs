@@ -3,14 +3,18 @@ using UnityEngine;
 
 namespace ActionCode.GameDataSystem
 {
+    /// <summary>
+    /// Abstract base class to persist the Game Data.
+    /// </summary>
     public abstract class AbstractGameData : ScriptableObject
     {
         [SerializeField] private int slotIndex;
 
+        public int SlotIndex => slotIndex;
+        public string LanguageCode { get; set; }
         public DateTime Created { get; private set; } = DateTime.Now;
         public DateTime LastUpdate { get; private set; } = DateTime.Now;
 
-        public int SlotIndex => slotIndex;
 
         public void UpdateData(int slot)
         {
@@ -28,5 +32,7 @@ namespace ActionCode.GameDataSystem
 
         public virtual string GetDisplayName() => $"Slot {SlotIndex}";
         public override string ToString() => GetDisplayName();
+
+        public bool HasInvalidLanguage() => string.IsNullOrEmpty(LanguageCode);
     }
 }
