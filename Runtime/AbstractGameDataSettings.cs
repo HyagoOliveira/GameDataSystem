@@ -2,7 +2,6 @@ using UnityEngine;
 using System;
 using System.Linq;
 using System.Collections;
-using System.Threading.Tasks;
 using ActionCode.Persistence;
 
 namespace ActionCode.GameDataSystem
@@ -50,10 +49,10 @@ namespace ActionCode.GameDataSystem
             }
         }
 
-        public async Task LoadFromLastSlotAsync() => await persistenceSettings.TryLoadLastSlot(Data);
-        public async Task LoadLocallyAsync(int slot) => await persistenceSettings.TryLoad(Data, slot);
+        public async Awaitable LoadFromLastSlotAsync() => await persistenceSettings.TryLoadLastSlot(Data);
+        public async Awaitable LoadLocallyAsync(int slot) => await persistenceSettings.TryLoad(Data, slot);
 
-        public async Task LoadRemotelyAsync(int slot)
+        public async Awaitable LoadRemotelyAsync(int slot)
         {
             var name = persistenceSettings.GetSlotName(slot);
             var json = await CloudProvider?.LoadAsync(name);
@@ -61,19 +60,20 @@ namespace ActionCode.GameDataSystem
             if (hasJson) persistenceSettings.GetFileSystem().Serializer.Deserialize(json, ref gameData);
         }
 
-        public async Task<bool> IsContinueAvailable() => await HasLastSlotAvailable();
+        public async Awaitable<bool> IsContinueAvailable() => await HasLastSlotAvailable();
 
-        public async Task<bool> TryDeleteAsync(int slot)
+        public async Awaitable<bool> TryDeleteAsync(int slot)
         {
+            await Awaitable.EndOfFrameAsync();
             //await CloudProvider?.DeleteAsync(persistenceSettings.GetSlotName(slot));
             return TryDeleteLocally(slot);
         }
 
-        public async Task<bool> TryDeleteAllAsync() =>
+        public async Awaitable<bool> TryDeleteAllAsync() =>
             TryDeleteAllLocally() &&
             await CloudProvider?.DeleteAllAsync();
 
-        public async Task<IList> ListSlotsAsync()
+        public async Awaitable<IList> ListSlotsAsync()
         {
             var names = persistenceSettings.GetNames();
             var slots = new T[names.Count()];
@@ -88,7 +88,7 @@ namespace ActionCode.GameDataSystem
             return slots;
         }
 
-        public async Task<IList> LoadAllRemotelyAsync(string playerId)
+        public async Awaitable<IList> LoadAllRemotelyAsync(string playerId)
         {
             var remoteData = await CloudProvider?.LoadAllAsync(playerId);
             var gamesData = new T[remoteData.Count()];
@@ -104,27 +104,13 @@ namespace ActionCode.GameDataSystem
             return gamesData;
         }
 
-        protected virtual async Task SaveLocallyAsync(ScriptableObject data, int slot)
-        {
-            var wasSaved = await persistenceSettings.Save(data, slot);
-            Debug.Log($"Was {data.name} locally saved in slot {slot}? {wasSaved}");
-        }
+        protected virtual async Awaitable SaveLocallyAsync(ScriptableObject data, int slot) =>
+            await persistenceSettings.Save(data, slot);
 
-        protected virtual bool TryDeleteLocally(int slot)
-        {
-            var wasDeleted = persistenceSettings.TryDelete(slot);
-            Debug.Log($"Was game data deleted from slot {slot}? {wasDeleted}");
-            return wasDeleted;
-        }
+        protected virtual bool TryDeleteLocally(int slot) => persistenceSettings.TryDelete(slot);
+        protected virtual bool TryDeleteAllLocally() => persistenceSettings.TryDeleteAll();
 
-        protected virtual bool TryDeleteAllLocally()
-        {
-            var wasDeleted = persistenceSettings.TryDeleteAll();
-            Debug.Log($"Was all data deleted? {wasDeleted}");
-            return wasDeleted;
-        }
-
-        private async Task<bool> HasLastSlotAvailable()
+        private async Awaitable<bool> HasLastSlotAvailable()
         {
             var data = CreateInstance<T>();
             return await persistenceSettings.TryLoadLastSlot(data);

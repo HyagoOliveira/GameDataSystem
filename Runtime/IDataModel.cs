@@ -1,5 +1,5 @@
+using UnityEngine;
 using System.Collections;
-using System.Threading.Tasks;
 
 namespace ActionCode.GameDataSystem
 {
@@ -10,14 +10,14 @@ namespace ActionCode.GameDataSystem
         void SaveData(int slot);
         void UpdateData(object data);
 
-        Task LoadFromLastSlotAsync();
-        Task LoadLocallyAsync(int slot);
-        Task LoadRemotelyAsync(int slot);
+        Awaitable LoadFromLastSlotAsync();
+        Awaitable LoadLocallyAsync(int slot);
+        Awaitable LoadRemotelyAsync(int slot);
 
-        Task<bool> IsContinueAvailable();
-        Task<bool> TryDeleteAsync(int slot);
-        Task<bool> TryDeleteAllAsync();
+        Awaitable<bool> IsContinueAvailable();
+        Awaitable<bool> TryDeleteAsync(int slot);
+        Awaitable<bool> TryDeleteAllAsync();
 
-        Task<IList> LoadAllRemotelyAsync(string playerId);
+        Awaitable<IList> LoadAllRemotelyAsync(string playerId);
     }
 }
