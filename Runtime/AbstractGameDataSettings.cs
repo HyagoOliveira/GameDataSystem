@@ -118,6 +118,12 @@ namespace ActionCode.GameDataSystem
 
         // The only available Cloud provider for now is from Unity Service.
         // No need to have others for now.
-        private static ICloudProvider GetavailableCloudProvider() => new UnityCloudService();
+        private static ICloudProvider GetavailableCloudProvider()
+        {
+#if UNITY_CLOUD_SAVE
+            return new UnityCloudService();
+#endif
+            return null;
+        }
     }
 }
