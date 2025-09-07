@@ -50,18 +50,8 @@ namespace ActionCode.GameDataSystem
             }
         }
 
-        public async Task LoadFromLastSlotAsync()
-        {
-            var slot = persistenceSettings.GetLastSlot();
-            var wasLoaded = await persistenceSettings.TryLoadLastSlot(Data);
-            Debug.Log($"Was data loaded from last slot {slot}? {wasLoaded}");
-        }
-
-        public async Task LoadLocallyAsync(int slot)
-        {
-            var wasLoaded = await persistenceSettings.TryLoad(Data, slot);
-            Debug.Log($"Was {Data.name} loaded from slot {slot}? {wasLoaded}");
-        }
+        public async Task LoadFromLastSlotAsync() => await persistenceSettings.TryLoadLastSlot(Data);
+        public async Task LoadLocallyAsync(int slot) => await persistenceSettings.TryLoad(Data, slot);
 
         public async Task LoadRemotelyAsync(int slot)
         {

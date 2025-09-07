@@ -10,16 +10,13 @@ namespace ActionCode.GameDataSystem
     {
         [SerializeField, Tooltip("The Game Slot index for this Data.")]
         private int slotIndex;
+        [Tooltip("The language code following the Localization System convention.")]
+        public string languageCode;
 
         /// <summary>
         /// The Game Slot index for this Data.
         /// </summary>
         public int SlotIndex => slotIndex;
-
-        /// <summary>
-        /// The language code following the Localization System convention.
-        /// </summary>
-        public string LanguageCode { get; set; }
 
         /// <summary>
         /// The time this Data was created.
@@ -31,7 +28,7 @@ namespace ActionCode.GameDataSystem
         /// </summary>
         public DateTime LastUpdate { get; private set; } = DateTime.Now;
 
-        public bool HasInvalidLanguage() => string.IsNullOrEmpty(LanguageCode);
+        public bool HasValidLanguage() => !string.IsNullOrEmpty(languageCode);
 
         public void UpdateData(int slot)
         {
