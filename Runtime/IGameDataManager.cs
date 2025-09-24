@@ -3,7 +3,13 @@ using System.Collections;
 
 namespace ActionCode.GameDataSystem
 {
-    public interface IDataModel
+    /// <summary>
+    /// Interface used on objects able to be a Game Data Manager.
+    /// <para>
+    /// Save, load and delete game data both locally and cloud remotely.
+    /// </para>
+    /// </summary>
+    public interface IGameDataManager
     {
         bool HasCloudProvider();
 
@@ -15,8 +21,8 @@ namespace ActionCode.GameDataSystem
         Awaitable LoadRemotelyAsync(int slot);
 
         Awaitable<bool> IsContinueAvailable();
-        Awaitable<bool> TryDeleteAsync(int slot);
         Awaitable<bool> TryDeleteAllAsync();
+        Awaitable<bool> TryDeleteAsync(int slot);
 
         Awaitable<IList> LoadAllRemotelyAsync(string playerId);
     }

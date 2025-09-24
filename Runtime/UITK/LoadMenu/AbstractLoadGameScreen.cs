@@ -19,7 +19,7 @@ namespace ActionCode.GameDataSystem
     public abstract class AbstractLoadGameScreen<T> : AbstractMenuLoadScreen where T : AbstractGameData
     {
         [SerializeField] private ListController list;
-        [SerializeField] protected AbstractGameDataSettings<T> gameDataSettings;
+        [SerializeField] protected AbstractGameDataManager<T> gameDataSettings;
 
         [Header("Data Names")]
         [SerializeField] private string dataDetailsName = "DataDetails";

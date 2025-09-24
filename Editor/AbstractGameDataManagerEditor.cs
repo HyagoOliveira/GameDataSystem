@@ -4,16 +4,19 @@ using ActionCode.Persistence;
 
 namespace ActionCode.GameDataSystem.Editor
 {
-    [CustomEditor(typeof(AbstractGameDataSettings<>), editorForChildClasses: true)]
-    public sealed class AbstractGameSettingsEditor : UnityEditor.Editor
+    /// <summary>
+    /// Custom editor for any <see cref="AbstractGameDataManager{T}"/> implementation.
+    /// </summary>
+    [CustomEditor(typeof(AbstractGameDataManager<>), editorForChildClasses: true)]
+    public sealed class AbstractGameDataManagerEditor : UnityEditor.Editor
     {
         private int currentSlot;
-        private IDataModel model;
+        private IGameDataManager model;
 
         private readonly int[] slots = { 0, 1, 2, 3 };
         private readonly string[] displaySlots = { "0", "1", "2", "3" };
 
-        private void OnEnable() => model = target as IDataModel;
+        private void OnEnable() => model = target as IGameDataManager;
 
         public override void OnInspectorGUI()
         {
