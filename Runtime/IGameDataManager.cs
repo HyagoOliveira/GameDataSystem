@@ -11,6 +11,10 @@ namespace ActionCode.GameDataSystem
     /// </summary>
     public interface IGameDataManager
     {
+        /// <summary>
+        /// The total number of available slots.
+        /// </summary>
+        int AvailableSlots { get; }
         bool HasCloudProvider();
 
         void SaveData(int slot);

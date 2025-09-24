@@ -19,15 +19,21 @@ namespace ActionCode.GameDataSystem
     {
         [SerializeField] private T gameData;
         [SerializeField] private PersistenceSettings persistence;
+        [SerializeField, Tooltip("The total number of available slots.")]
+        private int availableSlots = 4;
 
         /// <summary>
         /// The Game main data.
         /// </summary>
         public T Data => gameData;
 
+        public int AvailableSlots => availableSlots;
+
         public ICloudProvider CloudProvider => cloudProvider.Value;
 
         private readonly Lazy<ICloudProvider> cloudProvider = new(GetavailableCloudProvider);
+
+        private void OnValidate() => availableSlots = Mathf.Clamp(availableSlots, 1, 16);
 
         public bool HasCloudProvider() => CloudProvider != null;
 
@@ -129,5 +135,6 @@ namespace ActionCode.GameDataSystem
 #endif
             return null;
         }
+
     }
 }

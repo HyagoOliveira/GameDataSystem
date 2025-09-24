@@ -11,16 +11,17 @@ namespace ActionCode.GameDataSystem.Editor
     public sealed class AbstractGameDataManagerEditor : UnityEditor.Editor
     {
         private int currentSlot;
-        private IGameDataManager model;
+        private IGameDataManager manager;
 
-        private readonly int[] slots = { 0, 1, 2, 3 };
-        private readonly string[] displaySlots = { "0", "1", "2", "3" };
+        private int[] slots;
+        private string[] displaySlots;
 
-        private void OnEnable() => model = target as IGameDataManager;
+        private void OnEnable() => manager = target as IGameDataManager;
 
         public override void OnInspectorGUI()
         {
             base.OnInspectorGUI();
+            UpdateSlots();
 
             EditorGUILayout.Space();
             EditorGUILayout.Space();
@@ -35,18 +36,30 @@ namespace ActionCode.GameDataSystem.Editor
         private void DrawButtons()
         {
             EditorGUILayout.BeginHorizontal();
-            if (IsButtonDown("Save")) model.SaveData(currentSlot);
-            if (IsButtonDown("Local Load")) model.LoadLocallyAsync(currentSlot);
-            if (IsButtonDown("Cloud Load")) model.LoadRemotelyAsync(currentSlot);
-            if (IsButtonDown("Delete")) model.TryDeleteAsync(currentSlot);
+            if (IsButtonDown("Save")) manager.SaveData(currentSlot);
+            if (IsButtonDown("Local Load")) manager.LoadLocallyAsync(currentSlot);
+            if (IsButtonDown("Cloud Load")) manager.LoadRemotelyAsync(currentSlot);
+            if (IsButtonDown("Delete")) manager.TryDeleteAsync(currentSlot);
             EditorGUILayout.EndHorizontal();
 
-            if (IsButtonDown("Delete All Saves")) model.TryDeleteAllAsync();
+            if (IsButtonDown("Delete All Saves")) manager.TryDeleteAllAsync();
         }
 
         private void DrawOpenSaveFolderButton()
         {
             if (IsButtonDown("Open Save Folder")) FileSystem.OpenSaveFolder();
+        }
+
+        private void UpdateSlots()
+        {
+            slots = new int[manager.AvailableSlots];
+            displaySlots = new string[manager.AvailableSlots];
+
+            for (int i = 0; i < manager.AvailableSlots; i++)
+            {
+                slots[i] = i;
+                displaySlots[i] = i.ToString();
+            }
         }
 
         private static bool IsButtonDown(string name) => GUILayout.Button(name);
