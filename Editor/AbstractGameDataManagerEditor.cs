@@ -31,7 +31,13 @@ namespace ActionCode.GameDataSystem.Editor
             DrawButtons();
         }
 
-        private void DrawSlotsPopup() => currentSlot = EditorGUILayout.IntPopup("Current Slot", currentSlot, displaySlots, slots);
+        private void DrawSlotsPopup()
+        {
+            EditorGUILayout.BeginHorizontal();
+            currentSlot = EditorGUILayout.IntPopup("Current Slot", currentSlot, displaySlots, slots);
+            if (IsSmallButtonDown("Open")) { } //TODO: Implement this
+            EditorGUILayout.EndHorizontal();
+        }
 
         private void DrawButtons()
         {
@@ -63,5 +69,6 @@ namespace ActionCode.GameDataSystem.Editor
         }
 
         private static bool IsButtonDown(string name) => GUILayout.Button(name);
+        private static bool IsSmallButtonDown(string name) => GUILayout.Button(name, GUILayout.ExpandWidth(false));
     }
 }
