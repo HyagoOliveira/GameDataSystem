@@ -2,7 +2,7 @@
 
 * Game Data Serialization for Unity Games
 * Unity minimum version: **2019.3**
-* Current version: **0.1.0**
+* Current version: **0.2.0**
 * License: **MIT**
 * Dependencies:
 	- [com.actioncode.ui-system : 0.1.0](https://github.com/HyagoOliveira/UISystem/tree/0.1.0/)
@@ -32,7 +32,7 @@ You will need a **Git client** installed on your computer with the Path variable
 - You can also manually modify you `Packages/manifest.json` file and add this line inside `dependencies` attribute: 
 
 ```json
-"com.actioncode.GameDataSystem":"https://github.com/HyagoOliveira/GameDataSystem.git"
+"com.actioncode.game-data-system":"https://github.com/HyagoOliveira/GameDataSystem.git"
 ```
 
 ---

@@ -1,14 +1,13 @@
 {
   "name": "com.actioncode.game-data-system",
   "displayName": "ActionCode-Game Data System",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "unity": "2019.3",
   "description": "Game Data Serialization.",
   "keywords": [
     "",
     ""
   ],
-  "dependencies": {},
   "license": "MIT",
   "homepage": "https://github.com/HyagoOliveira/GameDataSystem#readme",
   "repository": {
