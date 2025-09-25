@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 ### Added
+- SerializedDateTime
 - ActionCode Audio package dependency
 
 ## [0.2.0] - 2025-09-25
