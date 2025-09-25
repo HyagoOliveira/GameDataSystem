@@ -10,10 +10,9 @@ namespace ActionCode.GameDataSystem
     {
         public int SlotIndex;
         public string LanguageCode;
-        public GameVersion Version;
-
-        public DateTime Created { get; private set; } = DateTime.Now;
-        public DateTime LastUpdate { get; private set; } = DateTime.Now;
+        public DateTime Created = new();
+        public DateTime LastUpdate = new();
+        public GameVersion Version = new();
 
         public bool HasValidLanguage() => !string.IsNullOrEmpty(LanguageCode);
 
