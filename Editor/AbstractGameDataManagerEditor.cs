@@ -58,7 +58,7 @@ namespace ActionCode.GameDataSystem.Editor
             for (int i = 0; i < manager.AvailableSlots; i++)
             {
                 slots[i] = i;
-                displaySlots[i] = i.ToString();
+                displaySlots[i] = i.ToString("D2");
             }
         }
 
