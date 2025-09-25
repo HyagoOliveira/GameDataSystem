@@ -4,36 +4,24 @@ using UnityEngine;
 namespace ActionCode.GameDataSystem
 {
     /// <summary>
-    /// Abstract base class to persist the Game Data.
+    /// Abstract base class to persist Game Data.
     /// </summary>
     public abstract class AbstractGameData : ScriptableObject
     {
-        [SerializeField, Tooltip("The Game Slot index for this Data.")]
-        private int slotIndex;
-        [Tooltip("The language code following the Localization System convention.")]
-        public string languageCode;
+        public int SlotIndex;
+        public string LanguageCode;
+        public GameVersion Version;
 
-        /// <summary>
-        /// The Game Slot index for this Data.
-        /// </summary>
-        public int SlotIndex => slotIndex;
-
-        /// <summary>
-        /// The time this Data was created.
-        /// </summary>
         public DateTime Created { get; private set; } = DateTime.Now;
-
-        /// <summary>
-        /// The last time this Data was updated.
-        /// </summary>
         public DateTime LastUpdate { get; private set; } = DateTime.Now;
 
-        public bool HasValidLanguage() => !string.IsNullOrEmpty(languageCode);
+        public bool HasValidLanguage() => !string.IsNullOrEmpty(LanguageCode);
 
         public void UpdateData(int slot)
         {
-            slotIndex = slot;
+            SlotIndex = slot;
             LastUpdate = DateTime.Now;
+            Version.Update();
         }
 
         public virtual void ResetData()
@@ -41,6 +29,7 @@ namespace ActionCode.GameDataSystem
             var className = GetType().Name;
             var data = CreateInstance(className);
             var json = JsonUtility.ToJson(data);
+            //TODO: Consider using Unity new Serialization package
             JsonUtility.FromJsonOverwrite(json, this);
         }
 
