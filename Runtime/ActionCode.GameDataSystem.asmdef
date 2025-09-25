@@ -2,6 +2,7 @@
     "name": "ActionCode.DataSystem",
     "rootNamespace": "ActionCode.GameDataSystem",
     "references": [
+        "GUID:f59d7605d4cbf89469c7b6e0071577a6",
         "GUID:9c28ae16f2bf6054f89167354241a994",
         "GUID:97b1f0f13e154439ba5fea6e086de8af",
         "GUID:a3c5f966aeca34e4c9b14669f41a5c93",
