@@ -11,8 +11,8 @@ namespace ActionCode.GameDataSystem
     {
         public int SlotIndex;
         public string LanguageCode;
-        public DateTime Created = new();
-        public DateTime LastUpdate = new();
+        public SerializedDateTime Created = new();
+        public SerializedDateTime LastUpdate = new();
         public GameVersion Version = new();
         public AudioData Audio = new();
 
