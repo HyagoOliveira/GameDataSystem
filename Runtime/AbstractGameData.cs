@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using ActionCode.Audio;
 
 namespace ActionCode.GameDataSystem
 {
@@ -13,6 +14,7 @@ namespace ActionCode.GameDataSystem
         public DateTime Created = new();
         public DateTime LastUpdate = new();
         public GameVersion Version = new();
+        public AudioData Audio = new();
 
         public bool HasValidLanguage() => !string.IsNullOrEmpty(LanguageCode);
 
