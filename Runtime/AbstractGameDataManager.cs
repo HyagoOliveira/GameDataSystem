@@ -37,7 +37,7 @@ namespace ActionCode.GameDataSystem
 
         public bool HasCloudProvider() => CloudProvider != null;
 
-        public void UpdateData(object data)
+        public void LoadData(object data)
         {
             var gameData = data as T;
             var serializer = persistence.GetFileSystem().Serializer;
@@ -83,7 +83,7 @@ namespace ActionCode.GameDataSystem
             TryDeleteAllLocally() &&
             await CloudProvider?.DeleteAllAsync();
 
-        public async Awaitable<IList> ListSlotsAsync()
+        public async Awaitable<IList> LoadAllLocallyAsync()
         {
             var names = persistence.GetNames();
             var slots = new T[names.Count()];

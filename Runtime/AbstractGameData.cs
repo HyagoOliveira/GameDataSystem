@@ -34,7 +34,7 @@ namespace ActionCode.GameDataSystem
             JsonUtility.FromJsonOverwrite(json, this);
         }
 
-        public virtual string GetDisplayName() => $"Game Data {SlotIndex:D2}";
         public override string ToString() => GetDisplayName();
+        public virtual string GetDisplayName() => $"Game Data {SlotIndex:D2}";
     }
 }
