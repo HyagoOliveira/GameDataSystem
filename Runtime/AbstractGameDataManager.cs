@@ -70,6 +70,13 @@ namespace ActionCode.GameDataSystem
             if (hasJson) persistence.GetFileSystem().Serializer.Deserialize(json, ref gameData);
         }
 
+        public async Awaitable<T> GetLocalDataAsync(int slot)
+        {
+            var data = CreateInstance<T>();
+            var wasLoaded = await persistence.TryLoad(data, slot);
+            return wasLoaded ? data : null;
+        }
+
         public async Awaitable<bool> IsContinueAvailable() => await HasLastSlotAvailable();
 
         public async Awaitable<bool> TryDeleteAsync(int slot)
