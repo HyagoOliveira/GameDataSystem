@@ -1,6 +1,5 @@
 using System;
 using UnityEngine;
-using ActionCode.Audio;
 
 namespace ActionCode.GameDataSystem
 {
@@ -9,12 +8,15 @@ namespace ActionCode.GameDataSystem
     /// </summary>
     public abstract class AbstractGameData : ScriptableObject
     {
-        public int SlotIndex;
-        public string LanguageCode;
+        public int SlotIndex; //TODO use uint
+        public ulong GameTime; // Time in seconds
+        public string LanguageCode; //TODO remove
+        public GameVersion Version = new();
         public SerializedDateTime Created = new();
         public SerializedDateTime LastUpdate = new();
-        public GameVersion Version = new();
-        public AudioData Audio = new();
+        public GameSettings Settings = new();
+
+        public event Action OnUpdated;
 
         public bool HasValidLanguage() => !string.IsNullOrEmpty(LanguageCode);
 
@@ -23,6 +25,7 @@ namespace ActionCode.GameDataSystem
             SlotIndex = slot;
             LastUpdate = DateTime.Now;
             Version.Update();
+            OnUpdated?.Invoke();
         }
 
         public virtual void ResetData()
@@ -30,11 +33,19 @@ namespace ActionCode.GameDataSystem
             var className = GetType().Name;
             var data = CreateInstance(className);
             var json = JsonUtility.ToJson(data);
-            //TODO: Consider using Unity new Serialization package
             JsonUtility.FromJsonOverwrite(json, this);
         }
 
         public override string ToString() => GetDisplayName();
         public virtual string GetDisplayName() => $"Game Data {SlotIndex:D2}";
+
+        public string GetDisplayGameTime()
+        {
+            var hours = GameTime / 3600;
+            var minutes = (GameTime % 3600) / 60;
+            var seconds = GameTime % 60;
+
+            return $"{hours:D2}:{minutes:D2}:{seconds:D2}";
+        }
     }
 }

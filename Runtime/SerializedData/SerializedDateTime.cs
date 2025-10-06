@@ -48,6 +48,8 @@ namespace ActionCode.GameDataSystem
             if (!wasParsed) dateTime = DateTime.Now;
         }
 
+        public override string ToString() => DateTime.ToString();
+
         #region CONVERTERS
         public static implicit operator DateTime(SerializedDateTime serializedDateTime) => serializedDateTime.DateTime;
         public static implicit operator SerializedDateTime(DateTime dateTime) => new(dateTime);

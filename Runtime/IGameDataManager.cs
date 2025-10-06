@@ -17,7 +17,8 @@ namespace ActionCode.GameDataSystem
         int AvailableSlots { get; }
         bool HasCloudProvider();
 
-        void SaveData(int slot);
+        Awaitable SaveDataAsync();
+        Awaitable SaveDataAsync(int slot);
         void LoadData(object data);
 
         Awaitable LoadFromLastSlotAsync();

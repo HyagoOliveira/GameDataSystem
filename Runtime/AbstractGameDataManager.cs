@@ -7,7 +7,7 @@ using ActionCode.Persistence;
 namespace ActionCode.GameDataSystem
 {
     /// <summary>
-    /// Provides an abstract base class for managing game data, including local and cloud-based persistence.
+    /// Provides an abstract base class for managing game data, including local and cloud-based CRUD (CReate, Update, Delete) operations.
     /// </summary>
     /// <remarks>
     /// This class handles operations such as saving, loading, and deleting game data both locally
@@ -22,6 +22,9 @@ namespace ActionCode.GameDataSystem
         [SerializeField, Tooltip("The total number of available slots.")]
         private int availableSlots = 4;
 
+        public event Action OnSaveDataStarted;
+        public event Action OnSaveDataFinished;
+
         /// <summary>
         /// The Game main data.
         /// </summary>
@@ -31,11 +34,18 @@ namespace ActionCode.GameDataSystem
 
         public ICloudProvider CloudProvider => cloudProvider.Value;
 
+        public int LastSlot
+        {
+            //TODO refact PersistenceSettings, removing lastSlotKey
+            get => PlayerPrefs.GetInt(persistence.lastSlotKey, 0);
+            private set => PlayerPrefs.SetInt(persistence.lastSlotKey, value);
+        }
+
         private readonly Lazy<ICloudProvider> cloudProvider = new(GetavailableCloudProvider);
 
         private void OnValidate() => availableSlots = Mathf.Clamp(availableSlots, 1, 16);
 
-        public bool HasCloudProvider() => CloudProvider != null;
+        public bool HasCloudProvider() => false;// CloudProvider != null;
 
         public void LoadData(object data)
         {
@@ -44,10 +54,14 @@ namespace ActionCode.GameDataSystem
             var content = serializer.Serialize(gameData);
 
             serializer.Deserialize(content, ref this.gameData);
+            LastSlot = this.gameData.SlotIndex;
         }
 
-        public async void SaveData(int slot)
+        public async Awaitable SaveDataAsync() => await SaveDataAsync(LastSlot);
+
+        public async Awaitable SaveDataAsync(int slot)
         {
+            OnSaveDataStarted?.Invoke();
             gameData.UpdateData(slot);
 
             await SaveLocallyAsync(Data, slot);
@@ -57,6 +71,7 @@ namespace ActionCode.GameDataSystem
                 var name = persistence.GetSlotName(slot);
                 await CloudProvider.SaveAsync(Data, name);
             }
+            OnSaveDataFinished?.Invoke();
         }
 
         public async Awaitable LoadFromLastSlotAsync() => await persistence.TryLoadLastSlot(Data);
