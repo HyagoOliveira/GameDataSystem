@@ -2,7 +2,7 @@
 
 * Game Data Serialization for Unity Games
 * Unity minimum version: **2019.3**
-* Current version: **0.2.0**
+* Current version: **0.3.0**
 * License: **MIT**
 * Dependencies:
 	- [com.actioncode.audio: 4.2.0](https://github.com/HyagoOliveira/Audio/tree/4.2.0/)
