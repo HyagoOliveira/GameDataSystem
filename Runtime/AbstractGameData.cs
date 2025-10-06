@@ -10,7 +10,6 @@ namespace ActionCode.GameDataSystem
     {
         public int SlotIndex; //TODO use uint
         public ulong GameTime; // Time in seconds
-        public string LanguageCode; //TODO remove
         public GameVersion Version = new();
         public SerializedDateTime Created = new();
         public SerializedDateTime LastUpdate = new();
@@ -18,7 +17,7 @@ namespace ActionCode.GameDataSystem
 
         public event Action OnUpdated;
 
-        public bool HasValidLanguage() => !string.IsNullOrEmpty(LanguageCode);
+        public bool HasValidLanguage() => !string.IsNullOrEmpty(Settings?.LanguageCode);
 
         public void UpdateData(int slot)
         {
