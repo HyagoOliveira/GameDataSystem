@@ -21,9 +21,6 @@
     "email": "hyagogow@gmail.com"
   },
   "dependencies": {
-    "com.actioncode.audio": "4.2.0",
-    "com.actioncode.input-system": "1.3.0",
-    "com.actioncode.persistence": "3.0.0",
-    "com.actioncode.ui-system": "0.3.0"
+    "com.actioncode.persistence": "3.0.0"
   }
 }
