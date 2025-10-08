@@ -6,8 +6,10 @@
 * License: **MIT**
 * Dependencies:
 	- [com.actioncode.audio: 4.2.0](https://github.com/HyagoOliveira/Audio/tree/4.2.0/)
-	- [com.actioncode.ui-system : 0.1.0](https://github.com/HyagoOliveira/UISystem/tree/0.1.0/)
+	- [com.actioncode.input-system : 1.3.0](https://github.com/HyagoOliveira/InputSystem/tree/1.3.0/)
 	- [com.actioncode.persistence : 3.0.0](https://github.com/HyagoOliveira/Persistence/tree/3.0.0/)
+	- [com.actioncode.ui-system : 0.3.0](https://github.com/HyagoOliveira/UISystem/tree/0.3.0/)
+	
 
 ## Summary
 
