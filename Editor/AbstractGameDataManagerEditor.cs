@@ -35,7 +35,10 @@ namespace ActionCode.GameDataSystem.Editor
         {
             EditorGUILayout.BeginHorizontal();
             currentSlot = EditorGUILayout.IntPopup("Current Slot", currentSlot, displaySlots, slots);
-            if (IsSmallButtonDown("Open")) { } //TODO: Implement this
+            if (IsSmallButtonDown("Open")) FileSystem.Open(
+                manager.GetSlotName(currentSlot),
+                manager.GetSerializationExtension()
+            );
             EditorGUILayout.EndHorizontal();
         }
 

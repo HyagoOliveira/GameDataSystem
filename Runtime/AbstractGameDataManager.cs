@@ -51,6 +51,9 @@ namespace ActionCode.GameDataSystem
 
         private void OnValidate() => availableSlots = Mathf.Clamp(availableSlots, 1, 16);
 
+        public string GetSlotName(int index) => $"{slotName}-{index:D2}";
+        public string GetSerializationExtension() => SerializerFactory.Create(persistence.serializer).Extension;
+
         public bool HasCloudProvider() => false;// CloudProvider != null;
 
         public void LoadData(object data)
@@ -171,7 +174,5 @@ namespace ActionCode.GameDataSystem
             return null;
 #endif
         }
-
-        public string GetSlotName(int index) => $"{slotName}-{index:D2}";
     }
 }
