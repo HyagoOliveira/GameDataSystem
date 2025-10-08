@@ -36,15 +36,19 @@ namespace ActionCode.GameDataSystem
         public void Update(string version)
         {
             var split = version.Split('.');
-            if (split.Length < 3)
+            if (split.Length == 0)
             {
-                Debug.LogError($"Invalid version format: {version}. Expected format is 'major.minor.patch'.");
+                Debug.LogError($"Invalid version format: '{version}'. Expected format is 'major.minor.patch'.");
                 Major = Minor = Patch = 0;
             }
 
-            Major = uint.Parse(split[0]);
-            Minor = uint.Parse(split[1]);
-            Patch = uint.Parse(split[2]);
+            var major = split.Length > 0 ? split[0] : "0";
+            var minor = split.Length > 1 ? split[1] : "0";
+            var patch = split.Length > 2 ? split[2] : "0";
+
+            Major = uint.Parse(major);
+            Minor = uint.Parse(minor);
+            Patch = uint.Parse(patch);
         }
     }
 }

@@ -1,8 +1,8 @@
-using UnityEngine;
 using System;
 using System.Linq;
 using System.Collections;
 using ActionCode.Persistence;
+using UnityEngine;
 
 namespace ActionCode.GameDataSystem
 {
@@ -19,8 +19,12 @@ namespace ActionCode.GameDataSystem
     {
         [SerializeField] private T gameData;
         [SerializeField] private PersistenceSettings persistence;
+
+        [Header("Slots")]
         [SerializeField, Tooltip("The total number of available slots.")]
         private int availableSlots = 4;
+        [Tooltip("The Save Slot name to use.")]
+        public string slotName = "SaveSlot";
 
         public event Action OnSaveDataStarted;
         public event Action OnSaveDataFinished;
@@ -34,12 +38,14 @@ namespace ActionCode.GameDataSystem
 
         public ICloudProvider CloudProvider => cloudProvider.Value;
 
-        public int LastSlot
+        public int LastSlotIndex
         {
             //TODO refact PersistenceSettings, removing lastSlotKey
-            get => PlayerPrefs.GetInt(persistence.lastSlotKey, 0);
-            private set => PlayerPrefs.SetInt(persistence.lastSlotKey, value);
+            get => PlayerPrefs.GetInt(LAST_SLOT_INDEX_KEY, 0);
+            private set => PlayerPrefs.SetInt(LAST_SLOT_INDEX_KEY, value);
         }
+
+        public const string LAST_SLOT_INDEX_KEY = "LastSlotIndex";
 
         private readonly Lazy<ICloudProvider> cloudProvider = new(GetavailableCloudProvider);
 
@@ -54,10 +60,10 @@ namespace ActionCode.GameDataSystem
             var content = serializer.Serialize(gameData);
 
             serializer.Deserialize(content, ref this.gameData);
-            LastSlot = this.gameData.SlotIndex;
+            LastSlotIndex = this.gameData.SlotIndex;
         }
 
-        public async Awaitable SaveDataAsync() => await SaveDataAsync(LastSlot);
+        public async Awaitable SaveDataAsync() => await SaveDataAsync(LastSlotIndex);
 
         public async Awaitable SaveDataAsync(int slot)
         {
@@ -68,18 +74,18 @@ namespace ActionCode.GameDataSystem
 
             if (HasCloudProvider())
             {
-                var name = persistence.GetSlotName(slot);
+                var name = GetSlotName(slot);
                 await CloudProvider.SaveAsync(Data, name);
             }
             OnSaveDataFinished?.Invoke();
         }
 
-        public async Awaitable LoadFromLastSlotAsync() => await persistence.TryLoadLastSlot(Data);
-        public async Awaitable LoadLocallyAsync(int slot) => await persistence.TryLoad(Data, slot);
+        public async Awaitable LoadFromLastSlotAsync() => await LoadLocallyAsync(LastSlotIndex);
+        public async Awaitable LoadLocallyAsync(int slot) => await persistence.TryLoadAsync(Data, GetSlotName(slot));
 
         public async Awaitable LoadRemotelyAsync(int slot)
         {
-            var name = persistence.GetSlotName(slot);
+            var name = GetSlotName(slot);
             var json = await CloudProvider?.LoadAsync(name);
             var hasJson = !string.IsNullOrEmpty(json);
             if (hasJson) persistence.GetFileSystem().Serializer.Deserialize(json, ref gameData);
@@ -88,22 +94,25 @@ namespace ActionCode.GameDataSystem
         public async Awaitable<T> GetLocalDataAsync(int slot)
         {
             var data = CreateInstance<T>();
-            var wasLoaded = await persistence.TryLoad(data, slot);
+            var name = GetSlotName(slot);
+            var wasLoaded = await persistence.TryLoadAsync(data, name);
             return wasLoaded ? data : null;
         }
 
         public async Awaitable<bool> IsContinueAvailable() => await HasLastSlotAvailable();
 
-        public async Awaitable<bool> TryDeleteAsync(int slot)
+        public async Awaitable DeleteAsync(int slot)
         {
             await Awaitable.EndOfFrameAsync();
             //await CloudProvider?.DeleteAsync(persistenceSettings.GetSlotName(slot));
-            return TryDeleteLocally(slot);
+            DeleteLocally(slot);
         }
 
-        public async Awaitable<bool> TryDeleteAllAsync() =>
-            TryDeleteAllLocally() &&
+        public async Awaitable DeleteAllAsync()
+        {
+            DeleteAllLocally();
             await CloudProvider?.DeleteAllAsync();
+        }
 
         public async Awaitable<IList> LoadAllLocallyAsync()
         {
@@ -114,7 +123,7 @@ namespace ActionCode.GameDataSystem
             {
                 var slotName = names.ElementAt(i);
                 slots[i] = CreateInstance<T>();
-                await persistence.TryLoad(slots[i], slotName);
+                await persistence.TryLoadAsync(slots[i], slotName);
             }
 
             return slots;
@@ -136,16 +145,20 @@ namespace ActionCode.GameDataSystem
             return gamesData;
         }
 
-        protected virtual async Awaitable SaveLocallyAsync(ScriptableObject data, int slot) =>
-            await persistence.Save(data, slot);
+        protected virtual async Awaitable SaveLocallyAsync(ScriptableObject data, int slot)
+        {
+            LastSlotIndex = slot;
+            await persistence.SaveAsync(data, GetSlotName(slot));
+        }
 
-        protected virtual bool TryDeleteLocally(int slot) => persistence.TryDelete(slot);
-        protected virtual bool TryDeleteAllLocally() => persistence.TryDeleteAll();
+        protected virtual void DeleteAllLocally() => persistence.DeleteAll();
+        protected virtual void DeleteLocally(int slot) => persistence.Delete(GetSlotName(slot));
 
         private async Awaitable<bool> HasLastSlotAvailable()
         {
             var data = CreateInstance<T>();
-            return await persistence.TryLoadLastSlot(data);
+            var name = GetSlotName(LastSlotIndex);
+            return await persistence.TryLoadAsync(data, name);
         }
 
         // The only available Cloud provider for now is from Unity Service.
@@ -159,5 +172,6 @@ namespace ActionCode.GameDataSystem
 #endif
         }
 
+        public string GetSlotName(int index) => $"{slotName}-{index:D2}";
     }
 }

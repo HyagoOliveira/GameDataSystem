@@ -25,9 +25,10 @@ namespace ActionCode.GameDataSystem
         Awaitable LoadLocallyAsync(int slot);
         Awaitable LoadRemotelyAsync(int slot);
 
+        Awaitable DeleteAsync(int slot);
+        Awaitable DeleteAllAsync();
+
         Awaitable<bool> IsContinueAvailable();
-        Awaitable<bool> TryDeleteAllAsync();
-        Awaitable<bool> TryDeleteAsync(int slot);
 
         Awaitable<IList> LoadAllRemotelyAsync(string playerId);
     }

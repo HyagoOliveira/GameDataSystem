@@ -45,10 +45,10 @@ namespace ActionCode.GameDataSystem.Editor
             if (IsButtonDown("Save")) manager.SaveDataAsync(currentSlot);
             if (IsButtonDown("Local Load")) manager.LoadLocallyAsync(currentSlot);
             if (IsButtonDown("Cloud Load")) manager.LoadRemotelyAsync(currentSlot);
-            if (IsButtonDown("Delete")) manager.TryDeleteAsync(currentSlot);
+            if (IsButtonDown("Delete")) manager.DeleteAsync(currentSlot);
             EditorGUILayout.EndHorizontal();
 
-            if (IsButtonDown("Delete All Saves")) manager.TryDeleteAllAsync();
+            if (IsButtonDown("Delete All Saves")) manager.DeleteAllAsync();
         }
 
         private void DrawOpenSaveFolderButton()
