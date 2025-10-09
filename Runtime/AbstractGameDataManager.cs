@@ -134,9 +134,9 @@ namespace ActionCode.GameDataSystem
 
         public async Awaitable DeleteAsync(int slot)
         {
-            await Awaitable.EndOfFrameAsync();
-            //await CloudProvider?.DeleteAsync(persistenceSettings.GetSlotName(slot));
-            Persistence.Delete(GetSlotName(slot));
+            var name = GetSlotName(slot);
+            if (HasCloudProvider()) await CloudProvider?.DeleteAsync(name);
+            Persistence.Delete(name);
         }
 
         public async Awaitable DeleteAllAsync()
