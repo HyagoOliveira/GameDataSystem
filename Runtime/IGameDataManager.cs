@@ -17,15 +17,15 @@ namespace ActionCode.GameDataSystem
         int AvailableSlots { get; }
         bool HasCloudProvider();
 
-        string GetSlotName(int index);
-        string GetSerializationExtension();
+        string GetSlotName(int slot);
+        string GetSerializedExtension();
 
         void LoadData(object data);
         Awaitable SaveDataAsync();
         Awaitable SaveDataAsync(int slot);
 
         Awaitable LoadFromLastSlotAsync();
-        Awaitable LoadLocallyAsync(int slot);
+        Awaitable LoadAsync(int slot);
         Awaitable LoadRemotelyAsync(int slot);
 
         Awaitable DeleteAsync(int slot);

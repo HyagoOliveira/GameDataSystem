@@ -37,7 +37,7 @@ namespace ActionCode.GameDataSystem.Editor
             currentSlot = EditorGUILayout.IntPopup("Current Slot", currentSlot, displaySlots, slots);
             if (IsSmallButtonDown("Open")) FileSystem.Open(
                 manager.GetSlotName(currentSlot),
-                manager.GetSerializationExtension()
+                manager.GetSerializedExtension()
             );
             EditorGUILayout.EndHorizontal();
         }
@@ -46,7 +46,7 @@ namespace ActionCode.GameDataSystem.Editor
         {
             EditorGUILayout.BeginHorizontal();
             if (IsButtonDown("Save")) manager.SaveDataAsync(currentSlot);
-            if (IsButtonDown("Local Load")) manager.LoadLocallyAsync(currentSlot);
+            if (IsButtonDown("Local Load")) manager.LoadAsync(currentSlot);
             if (IsButtonDown("Cloud Load")) manager.LoadRemotelyAsync(currentSlot);
             if (IsButtonDown("Delete")) manager.DeleteAsync(currentSlot);
             EditorGUILayout.EndHorizontal();
