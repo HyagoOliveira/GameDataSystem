@@ -8,6 +8,8 @@ namespace ActionCode.GameDataSystem
     /// </summary>
     public abstract class AbstractGameData : ScriptableObject
     {
+        // All fields should be public and named in CamelCase.
+
         public int SlotIndex; //TODO use uint
         public ulong GameTime; // Time in seconds
         public GameVersion Version = new();
