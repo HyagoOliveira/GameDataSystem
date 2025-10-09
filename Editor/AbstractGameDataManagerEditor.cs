@@ -45,8 +45,8 @@ namespace ActionCode.GameDataSystem.Editor
         private void DrawButtons()
         {
             EditorGUILayout.BeginHorizontal();
-            if (IsButtonDown("Save")) manager.SaveDataAsync(currentSlot);
-            if (IsButtonDown("Load")) manager.LoadAsync(currentSlot);
+            if (IsButtonDown("Save")) manager.SaveAsync(currentSlot);
+            if (IsButtonDown("Load")) manager.TryLoadAsync(currentSlot);
             if (IsButtonDown("Cloud Load")) manager.LoadRemotelyAsync(currentSlot);
             if (IsButtonDown("Delete")) manager.DeleteAsync(currentSlot);
             EditorGUILayout.EndHorizontal();

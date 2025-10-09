@@ -89,9 +89,9 @@ namespace ActionCode.GameDataSystem
             LastSlotIndex = this.gameData.SlotIndex;
         }
 
-        public async Awaitable SaveDataAsync() => await SaveDataAsync(LastSlotIndex);
+        public async Awaitable SaveAsync() => await SaveAsync(LastSlotIndex);
 
-        public async Awaitable SaveDataAsync(int slot)
+        public async Awaitable SaveAsync(int slot)
         {
             OnSaveStarted?.Invoke();
             gameData.UpdateData(slot);
@@ -108,13 +108,13 @@ namespace ActionCode.GameDataSystem
             OnSaveFinished?.Invoke();
         }
 
-        public async Awaitable LoadFromLastSlotAsync() => await LoadAsync(LastSlotIndex);
+        public async Awaitable<bool> TryLoadFromLastSlotAsync() => await TryLoadAsync(LastSlotIndex);
 
-        public async Awaitable LoadAsync(int slot)
+        public async Awaitable<bool> TryLoadAsync(int slot)
         {
             // Raw file is human legible file (the pretty .json)
             var loadFromRawFile = Debug.isDebugBuild;
-            await Persistence.TryLoadAsync(Data, GetSlotName(slot), loadFromRawFile);
+            return await Persistence.TryLoadAsync(Data, GetSlotName(slot), loadFromRawFile);
         }
 
         public async Awaitable<IList> LoadAllAsync()

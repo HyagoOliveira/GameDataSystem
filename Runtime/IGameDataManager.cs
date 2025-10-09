@@ -21,11 +21,11 @@ namespace ActionCode.GameDataSystem
         string GetSerializedExtension();
 
         void LoadData(object data);
-        Awaitable SaveDataAsync();
-        Awaitable SaveDataAsync(int slot);
+        Awaitable SaveAsync();
+        Awaitable SaveAsync(int slot);
 
-        Awaitable LoadFromLastSlotAsync();
-        Awaitable LoadAsync(int slot);
+        Awaitable<bool> TryLoadFromLastSlotAsync();
+        Awaitable<bool> TryLoadAsync(int slot);
         Awaitable LoadRemotelyAsync(int slot);
 
         Awaitable DeleteAsync(int slot);
