@@ -109,7 +109,13 @@ namespace ActionCode.GameDataSystem
         }
 
         public async Awaitable LoadFromLastSlotAsync() => await LoadAsync(LastSlotIndex);
-        public async Awaitable LoadAsync(int slot) => await Persistence.TryLoadAsync(Data, GetSlotName(slot));
+
+        public async Awaitable LoadAsync(int slot)
+        {
+            // Raw file is human legible file (the pretty .json)
+            var loadFromRawFile = Debug.isDebugBuild;
+            await Persistence.TryLoadAsync(Data, GetSlotName(slot), loadFromRawFile);
+        }
 
         public async Awaitable<IList> LoadAllAsync()
         {
