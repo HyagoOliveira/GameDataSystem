@@ -8,10 +8,10 @@ namespace ActionCode.GameDataSystem
     /// </summary>
     public abstract class AbstractGameData : ScriptableObject
     {
-        // All fields should be public and named in CamelCase.
+        // All fields should be public and named in CamelCase (including inner classes)
 
-        public int SlotIndex; //TODO use uint
-        public ulong GameTime; // Time in seconds
+        public int SlotIndex;
+        public ulong GameSecondsTime;
         public GameVersion Version = new();
         public SerializedDateTime Created = new();
         public SerializedDateTime LastUpdate = new();
@@ -42,9 +42,9 @@ namespace ActionCode.GameDataSystem
 
         public string GetDisplayGameTime()
         {
-            var hours = GameTime / 3600;
-            var minutes = (GameTime % 3600) / 60;
-            var seconds = GameTime % 60;
+            var hours = GameSecondsTime / 3600;
+            var minutes = (GameSecondsTime % 3600) / 60;
+            var seconds = GameSecondsTime % 60;
 
             return $"{hours:D2}:{minutes:D2}:{seconds:D2}";
         }
