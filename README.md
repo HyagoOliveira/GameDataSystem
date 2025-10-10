@@ -1,11 +1,11 @@
 # Game Data System
 
 * Game Data Serialization for Unity Games
-* Unity minimum version: **2019.3**
-* Current version: **0.3.0**
+* Unity minimum version: **6000.1**
+* Current version: **0.4.0**
 * License: **MIT**
 * Dependencies:
-	- [com.actioncode.persistence : 3.0.0](https://github.com/HyagoOliveira/Persistence/tree/3.0.0/)	
+	- [com.actioncode.persistence : 4.0.0](https://github.com/HyagoOliveira/Persistence/tree/4.0.0/)
 
 ## Summary
 
