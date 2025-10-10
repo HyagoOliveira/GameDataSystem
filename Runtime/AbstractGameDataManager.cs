@@ -1,8 +1,8 @@
 using System;
 using System.Linq;
 using System.Collections;
-using UnityEngine;
 using ActionCode.Persistence;
+using UnityEngine;
 
 namespace ActionCode.GameDataSystem
 {
@@ -61,7 +61,7 @@ namespace ActionCode.GameDataSystem
 
         public void LoadData(T data)
         {
-            // Cannot set gameData = data
+            // Cannot set SerializeField gameData = data
 
             var serializer = Persistence.GetFileSystem().Serializer;
             var content = serializer.Serialize(data);
