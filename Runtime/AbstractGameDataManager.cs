@@ -66,11 +66,12 @@ namespace ActionCode.GameDataSystem
             var serializer = Persistence.GetFileSystem().Serializer;
             var content = serializer.Serialize(data);
 
-            // ScriptableObjects (SO) are designed to persist data between Scenes only in the Editor, not on Builds.
-            // In a Build, a SO resets its values when transitioning between Scenes if not referenced by any reference in memory.
+            // SOs are designed to persist data between Scenes only in the Editor, not on Builds.
+            // In a Build, a SO resets its values when transitioning between Scenes if not referenced
+            // by any reference in memory.
 
-            serializer.Deserialize(content, ref gameData); // This only works on Editor.
-            LastSlotIndex = gameData.SlotIndex; // In a Build, gameData should be loaded from LastSlotIndex when moving to another Scene.
+            serializer.Deserialize(content, ref gameData);
+            LastSlotIndex = gameData.SlotIndex;
         }
 
         public string GetSlotName(int slot) => $"{slotName}-{slot:D2}";
