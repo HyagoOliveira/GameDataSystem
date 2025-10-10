@@ -1,8 +1,8 @@
 using System;
 using System.Linq;
 using System.Collections;
-using ActionCode.Persistence;
 using UnityEngine;
+using ActionCode.Persistence;
 
 namespace ActionCode.GameDataSystem
 {
@@ -81,16 +81,6 @@ namespace ActionCode.GameDataSystem
             return wasLoaded ? data : null;
         }
 
-        public void LoadData(object data)
-        {
-            var gameData = data as T;
-            var serializer = Persistence.GetFileSystem().Serializer;
-            var content = serializer.Serialize(gameData);
-
-            serializer.Deserialize(content, ref this.gameData);
-            LastSlotIndex = this.gameData.SlotIndex;
-        }
-
         public async Awaitable SaveAsync() => await SaveAsync(LastSlotIndex);
 
         public async Awaitable SaveAsync(int slot)
@@ -99,13 +89,10 @@ namespace ActionCode.GameDataSystem
             gameData.UpdateData(slot);
 
             LastSlotIndex = slot;
-            await Persistence.SaveAsync(Data, GetSlotName(slot));
+            var name = GetSlotName(slot);
 
-            if (HasCloudProvider())
-            {
-                var name = GetSlotName(slot);
-                await CloudProvider.SaveAsync(Data, name);
-            }
+            await Persistence.SaveAsync(Data, name);
+            if (HasCloudProvider()) await CloudProvider.SaveAsync(Data, name);
 
             OnSaveFinished?.Invoke();
         }

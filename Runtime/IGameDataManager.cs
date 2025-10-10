@@ -23,7 +23,6 @@ namespace ActionCode.GameDataSystem
         string GetSlotName(int slot);
         string GetSerializedExtension();
 
-        void LoadData(object data);
         Awaitable SaveAsync();
         Awaitable SaveAsync(int slot);
 
