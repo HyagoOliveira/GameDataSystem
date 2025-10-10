@@ -59,6 +59,20 @@ namespace ActionCode.GameDataSystem
 
         private void OnValidate() => availableSlots = Mathf.Clamp(availableSlots, 1, MAX_SLOTS);
 
+        public void LoadData(T data)
+        {
+            // Cannot set gameData = data
+
+            var serializer = Persistence.GetFileSystem().Serializer;
+            var content = serializer.Serialize(data);
+
+            // ScriptableObjects (SO) are designed to persist data between Scenes only in the Editor, not on Builds.
+            // In a Build, a SO resets its values when transitioning between Scenes if not referenced by any reference in memory.
+
+            serializer.Deserialize(content, ref gameData); // This only works on Editor.
+            LastSlotIndex = gameData.SlotIndex; // In a Build, gameData should be loaded from LastSlotIndex when moving to another Scene.
+        }
+
         public string GetSlotName(int slot) => $"{slotName}-{slot:D2}";
         public string GetSerializedExtension() => SerializerFactory.Create(Persistence.serializer).Extension;
 
@@ -88,17 +102,18 @@ namespace ActionCode.GameDataSystem
             OnSaveStarted?.Invoke();
             gameData.UpdateData(slot);
 
-            LastSlotIndex = slot;
             var name = GetSlotName(slot);
 
             await Persistence.SaveAsync(Data, name);
             if (HasCloudProvider()) await CloudProvider.SaveAsync(Data, name);
 
+            LastSlotIndex = slot;
             OnSaveFinished?.Invoke();
         }
 
         public async Awaitable<bool> TryLoadFromLastSlotAsync() => await TryLoadAsync(LastSlotIndex);
         public async Awaitable<bool> TryLoadAsync(string path) => await Persistence.TryLoadAsync(Data, path);
+
         public async Awaitable<bool> TryLoadAsync(int slot)
         {
             var name = GetSlotName(slot);
