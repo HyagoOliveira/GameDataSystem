@@ -117,6 +117,8 @@ namespace ActionCode.GameDataSystem
             return await Persistence.TryLoadAsync(Data, GetSlotName(slot), loadFromRawFile);
         }
 
+        public async Awaitable<bool> TryLoadAsync(string path) => await Persistence.TryLoadAsync(Data, path);
+
         public async Awaitable<IList> LoadAllAsync()
         {
             var names = Persistence.GetNames();

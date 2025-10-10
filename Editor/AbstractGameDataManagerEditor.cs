@@ -52,6 +52,11 @@ namespace ActionCode.GameDataSystem.Editor
             EditorGUILayout.EndHorizontal();
 
             if (IsButtonDown("Delete All")) manager.DeleteAllAsync();
+            if (IsButtonDown("Load Save File"))
+            {
+                var path = GetSaveFilePath(manager.GetSerializedExtension());
+                manager.TryLoadAsync(path);
+            }
         }
 
         private void DrawOpenSaveFolderButton()
@@ -73,5 +78,13 @@ namespace ActionCode.GameDataSystem.Editor
 
         private static bool IsButtonDown(string name) => GUILayout.Button(name);
         private static bool IsSmallButtonDown(string name) => GUILayout.Button(name, GUILayout.ExpandWidth(false));
+
+        private static string GetSaveFilePath(string serializedExtension) => EditorUtility.OpenFilePanelWithFilters(
+            title: "Load Save File",
+            directory: FileSystem.DataPath,
+            filters: new string[] {
+                 "All files", "*"
+            }
+        );
     }
 }

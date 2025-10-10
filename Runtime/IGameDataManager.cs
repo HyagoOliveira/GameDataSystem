@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using ActionCode.Persistence;
 
 namespace ActionCode.GameDataSystem
 {
@@ -15,6 +16,8 @@ namespace ActionCode.GameDataSystem
         /// The total number of available slots.
         /// </summary>
         int AvailableSlots { get; }
+        PersistenceSettings Persistence { get; }
+
         bool HasCloudProvider();
 
         string GetSlotName(int slot);
@@ -26,6 +29,7 @@ namespace ActionCode.GameDataSystem
 
         Awaitable<bool> TryLoadFromLastSlotAsync();
         Awaitable<bool> TryLoadAsync(int slot);
+        Awaitable<bool> TryLoadAsync(string path);
         Awaitable LoadRemotelyAsync(int slot);
 
         Awaitable DeleteAsync(int slot);
