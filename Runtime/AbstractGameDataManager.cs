@@ -68,14 +68,16 @@ namespace ActionCode.GameDataSystem
         {
             var data = CreateInstance<T>();
             var name = GetSlotName(LastSlotIndex);
-            return await Persistence.TryLoadAsync(data, name);
+            var useRawFile = ShouldLoadFromRawFile();
+            return await Persistence.TryLoadAsync(data, name, useRawFile);
         }
 
         public async Awaitable<T> GetDataAsync(int slot)
         {
             var data = CreateInstance<T>();
             var name = GetSlotName(slot);
-            var wasLoaded = await Persistence.TryLoadAsync(data, name);
+            var useRawFile = ShouldLoadFromRawFile();
+            var wasLoaded = await Persistence.TryLoadAsync(data, name, useRawFile);
             return wasLoaded ? data : null;
         }
 
@@ -109,15 +111,13 @@ namespace ActionCode.GameDataSystem
         }
 
         public async Awaitable<bool> TryLoadFromLastSlotAsync() => await TryLoadAsync(LastSlotIndex);
-
+        public async Awaitable<bool> TryLoadAsync(string path) => await Persistence.TryLoadAsync(Data, path);
         public async Awaitable<bool> TryLoadAsync(int slot)
         {
-            // Raw file is human legible file (the pretty .json)
-            var loadFromRawFile = Debug.isDebugBuild;
-            return await Persistence.TryLoadAsync(Data, GetSlotName(slot), loadFromRawFile);
+            var name = GetSlotName(slot);
+            var useRawFile = ShouldLoadFromRawFile();
+            return await Persistence.TryLoadAsync(Data, name, useRawFile);
         }
-
-        public async Awaitable<bool> TryLoadAsync(string path) => await Persistence.TryLoadAsync(Data, path);
 
         public async Awaitable<IList> LoadAllAsync()
         {
@@ -146,6 +146,12 @@ namespace ActionCode.GameDataSystem
             Persistence.DeleteAll();
             await CloudProvider?.DeleteAllAsync();
         }
+
+        /// <summary>
+        /// Raw file is human legible file (the pretty .json)
+        /// </summary>
+        /// <returns>Whether should load from the Raw File.</returns>
+        public static bool ShouldLoadFromRawFile() => Debug.isDebugBuild;
 
         //TODO improve remote functions
         #region REMOTE
