@@ -29,6 +29,15 @@ namespace ActionCode.GameDataSystem
             OnUpdated?.Invoke();
         }
 
+        public AbstractGameData Copy()
+        {
+            var className = GetType().Name;
+            var copy = CreateInstance(className) as AbstractGameData;
+            var json = JsonUtility.ToJson(this);
+            JsonUtility.FromJsonOverwrite(json, copy);
+            return copy;
+        }
+
         public virtual void ResetData()
         {
             var className = GetType().Name;
