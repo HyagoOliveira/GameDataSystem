@@ -7,7 +7,7 @@ namespace ActionCode.GameDataSystem
     /// Serialized data class for Audio.
     /// </summary>
     [Serializable]
-    public sealed class AudioData
+    public sealed class AudioData : ICloneable
     {
         [Range(0, MAX_VOLUME)] public uint BackgroundVolume;
         [Range(0, MAX_VOLUME)] public uint SoundEffectsVolume;
@@ -51,5 +51,7 @@ namespace ActionCode.GameDataSystem
             VoiceEffectsVolume = voiceEffectsVolume;
             GamepadVolume = gamepadVolume;
         }
+
+        public object Clone() => MemberwiseClone();
     }
 }
