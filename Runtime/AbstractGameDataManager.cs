@@ -112,8 +112,13 @@ namespace ActionCode.GameDataSystem
             OnSaveFinished?.Invoke();
         }
 
-        public async Awaitable<bool> TryLoadFromLastSlotAsync() => await TryLoadAsync(LastSlotIndex);
         public async Awaitable<bool> TryLoadAsync(string path) => await Persistence.TryLoadAsync(Data, path);
+
+        public async Awaitable<bool> TryLoadFromLastSlotAsync()
+        {
+            Data.ResetData();
+            return await TryLoadAsync(LastSlotIndex);
+        }
 
         public async Awaitable<bool> TryLoadAsync(int slot)
         {
