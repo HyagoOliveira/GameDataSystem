@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Added
+- GameDataBuildReseter
+
 ## [0.5.1] - 2025-10-11
 ### Fixes
 - Code fixes
