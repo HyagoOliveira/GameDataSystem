@@ -1,3 +1,4 @@
+using UnityEditor;
 using UnityEngine;
 using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
@@ -17,6 +18,10 @@ namespace ActionCode.GameDataSystem.Editor
             if (!hasGameData) return;
 
             gameData.ResetData();
+            // Saving the changes.
+            EditorUtility.SetDirty(gameData);
+            AssetDatabase.SaveAssets();
+
             Debug.Log($"ScriptableObject '{gameData.name}' was reseted.");
         }
     }
