@@ -9,30 +9,31 @@ namespace ActionCode.GameDataSystem.Editor
     public static class GameDataFinder
     {
         [MenuItem("Tools/Find/GameData")]
-        private static void FindGameData() => FindFirstAsset(nameof(AbstractGameData));
-
-        public static void FindFirstAsset(string type)
+        private static void FindGameData()
         {
+            var hasGameData = TryGetGameData(out var gameData);
+            if (!hasGameData) return;
+
+            Selection.activeObject = gameData;
+            EditorGUIUtility.PingObject(gameData);
+        }
+
+        public static bool TryGetGameData(out AbstractGameData data)
+        {
+            data = null;
+            var type = nameof(AbstractGameData);
             var query = $"t:{type}";
             var guids = AssetDatabase.FindAssets(query);
 
             if (guids.Length == 0)
             {
                 Debug.LogWarning($"No assets of type '{type}' were found.");
-                return;
+                return false;
             }
 
             var path = AssetDatabase.GUIDToAssetPath(guids[0]);
-            Find(path);
-        }
-
-        public static void Find(string path)
-        {
-            var folder = AssetDatabase.LoadAssetAtPath<Object>(path);
-            if (folder == null) return;
-
-            Selection.activeObject = folder;
-            EditorGUIUtility.PingObject(folder);
+            data = AssetDatabase.LoadAssetAtPath<AbstractGameData>(path);
+            return true;
         }
     }
 }
