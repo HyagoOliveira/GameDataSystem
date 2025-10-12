@@ -12,9 +12,9 @@ namespace ActionCode.GameDataSystem
 
         public int SlotIndex;
         public ulong GameSecondsTime;
-        public GameVersion Version = new();
         public SerializedDateTime Created;
         public SerializedDateTime LastUpdate;
+        public GameVersion Version = new();
         public GameSettings Settings = new();
 
         public event Action OnUpdated;
