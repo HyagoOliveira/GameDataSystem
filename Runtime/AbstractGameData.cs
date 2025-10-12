@@ -13,8 +13,8 @@ namespace ActionCode.GameDataSystem
         public int SlotIndex;
         public ulong GameSecondsTime;
         public GameVersion Version = new();
-        public SerializedDateTime Created = new();
-        public SerializedDateTime LastUpdate = new();
+        public SerializedDateTime Created;
+        public SerializedDateTime LastUpdate;
         public GameSettings Settings = new();
 
         public event Action OnUpdated;
@@ -25,7 +25,9 @@ namespace ActionCode.GameDataSystem
         {
             SlotIndex = slot;
             LastUpdate = DateTime.Now;
+            if (Created.IsEmpty()) Created = DateTime.Now;
             Version.Update();
+
             OnUpdated?.Invoke();
         }
 

@@ -8,51 +8,39 @@ namespace ActionCode.GameDataSystem
     /// <para>You can see on the Inspector.</para>
     /// </summary>
     [Serializable]
-    public class SerializedDateTime : ISerializationCallbackReceiver
+    public sealed class SerializedDateTime
     {
         [Tooltip("The current DateTime value in ISO 8601 format.")]
         public string Time;
 
-        private DateTime dateTime;
-
-        /// <summary>
-        /// Serialized wrapper for <see cref="DateTime"/> struct.
-        /// </summary>
-        public SerializedDateTime() : this(DateTime.Now) { }
+        public const string ISO8601 = "o";
 
         /// <summary>
         /// <inheritdoc cref="SerializedDateTime()"/>
         /// </summary>
         /// <param name="dateTime">The DateTime</param>
-        public SerializedDateTime(DateTime dateTime) => this.dateTime = dateTime;
+        public SerializedDateTime(DateTime dateTime) => DateTime = dateTime;
 
         /// <summary>
         /// The current DateTime value.
         /// </summary>
         public DateTime DateTime
         {
-            get => dateTime;
-            set => dateTime = value;
+            get
+            {
+                DateTime.TryParse(Time, out var dateTime);
+                return dateTime;
+            }
+            set => Time = value.ToString(ISO8601);
         }
 
-        public void OnBeforeSerialize()
-        {
-            const string ISO8601_Format = "o";
-            Time = dateTime.ToString(ISO8601_Format);
-        }
-
-        public void OnAfterDeserialize()
-        {
-            var isValidString = !string.IsNullOrEmpty(Time);
-            var wasParsed = isValidString && DateTime.TryParse(Time, out dateTime);
-            if (!wasParsed) dateTime = DateTime.Now;
-        }
+        public bool IsEmpty() => string.IsNullOrEmpty(Time);
 
         public override string ToString() => DateTime.ToString();
 
         #region CONVERTERS
-        public static implicit operator DateTime(SerializedDateTime serializedDateTime) => serializedDateTime.DateTime;
         public static implicit operator SerializedDateTime(DateTime dateTime) => new(dateTime);
+        public static implicit operator DateTime(SerializedDateTime serializedDateTime) => serializedDateTime.DateTime;
         #endregion
     }
 }

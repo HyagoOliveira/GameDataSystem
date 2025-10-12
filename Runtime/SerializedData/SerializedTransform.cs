@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 
 namespace ActionCode.GameDataSystem
@@ -15,7 +14,7 @@ namespace ActionCode.GameDataSystem
 
         public SerializedTransform(Vector3 position, Quaternion rotation)
         {
-            Position = Round(position);
+            Position = position;
             Rotation = rotation;
         }
 
@@ -24,11 +23,5 @@ namespace ActionCode.GameDataSystem
         { }
 
         public static implicit operator SerializedTransform(Transform transform) => new(transform);
-
-        private static Vector3 Round(Vector3 value) => new(
-            MathF.Round(value.x, 2),
-            MathF.Round(value.y, 2),
-            MathF.Round(value.z, 2)
-        );
     }
 }
