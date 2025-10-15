@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace ActionCode.GameDataSystem
@@ -6,11 +5,11 @@ namespace ActionCode.GameDataSystem
     public interface ICloudProvider
     {
         bool IsUnavailable();
-        Task SaveAsync(ScriptableObject data, string name);
-        Task<string> LoadAsync(string name, string playerId = null);
-        Task<string[]> LoadAllAsync(string playerId);
-        Task<string[]> ListRemoteKeys(string playerId = null);
-        Task<bool> DeleteAsync(string name);
-        Task<bool> DeleteAllAsync();
+        Awaitable SaveAsync(ScriptableObject data, string name);
+        Awaitable<string> LoadAsync(string name, string playerId = null);
+        Awaitable<string[]> LoadAllAsync(string playerId);
+        Awaitable<string[]> ListRemoteKeys(string playerId = null);
+        Awaitable<bool> DeleteAsync(string name);
+        Awaitable<bool> DeleteAllAsync();
     }
 }

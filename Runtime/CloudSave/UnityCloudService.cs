@@ -1,7 +1,6 @@
 #if UNITY_CLOUD_SAVE
 using UnityEngine;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using Unity.Services.CloudSave;
 using Unity.Services.CloudSave.Internal;
 using Unity.Services.CloudSave.Models.Data.Player;
@@ -17,7 +16,7 @@ namespace ActionCode.GameDataSystem
 
         public bool IsUnavailable() => !Application.isPlaying;
 
-        public async Task SaveAsync(ScriptableObject data, string name)
+        public async Awaitable SaveAsync(ScriptableObject data, string name)
         {
             if (IsUnavailable()) return;
 
@@ -29,7 +28,7 @@ namespace ActionCode.GameDataSystem
             Debug.Log($"Was {name} saved remotely? {wasSaved}");
         }
 
-        public async Task<string> LoadAsync(string name, string playerId = null)
+        public async Awaitable<string> LoadAsync(string name, string playerId = null)
         {
             if (IsUnavailable()) return string.Empty;
 
@@ -42,7 +41,7 @@ namespace ActionCode.GameDataSystem
             return wasLoaded ? remoteData.Value.GetAsString() : string.Empty;
         }
 
-        public async Task<string[]> LoadAllAsync(string playerId)
+        public async Awaitable<string[]> LoadAllAsync(string playerId)
         {
             if (IsUnavailable()) return null;
 
@@ -62,7 +61,7 @@ namespace ActionCode.GameDataSystem
             return remoteData;
         }
 
-        public async Task<bool> DeleteAsync(string name)
+        public async Awaitable<bool> DeleteAsync(string name)
         {
             if (IsUnavailable()) return false;
 
@@ -90,7 +89,7 @@ namespace ActionCode.GameDataSystem
             return false;
         }
 
-        public async Task<bool> DeleteAllAsync()
+        public async Awaitable<bool> DeleteAllAsync()
         {
             if (IsUnavailable()) return false;
 
@@ -109,7 +108,7 @@ namespace ActionCode.GameDataSystem
             return false;
         }
 
-        public async Task<string[]> ListRemoteKeys(string playerId = null)
+        public async Awaitable<string[]> ListRemoteKeys(string playerId = null)
         {
             if (IsUnavailable()) return new string[0];
 
