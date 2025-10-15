@@ -170,7 +170,7 @@ namespace ActionCode.GameDataSystem
         public bool TryGetCloudProvider(out ICloudProvider provider)
         {
             provider = GetCloudProvider();
-            return provider != null && !provider.IsUnavailable();
+            return provider != null && provider.IsAvailable();
         }
 
         public ICloudProvider GetCloudProvider() => CloudProviderFactory.Create(cloudProvider);

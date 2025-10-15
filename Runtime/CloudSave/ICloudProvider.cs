@@ -7,7 +7,7 @@ namespace ActionCode.GameDataSystem
     /// </summary>
     public interface ICloudProvider
     {
-        bool IsUnavailable();
+        bool IsAvailable();
         Awaitable SaveAsync(ScriptableObject data, string name);
         Awaitable<string> LoadAsync(string name, string playerId = null);
         Awaitable<string[]> LoadAllAsync(string playerId);

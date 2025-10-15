@@ -17,12 +17,10 @@ namespace ActionCode.GameDataSystem
     {
         public IPlayerDataService CloudPlayer => CloudSaveService.Instance.Data.Player;
 
-        public bool IsUnavailable() => !Application.isPlaying;
+        public bool IsAvailable() => Application.isPlaying;
 
         public async Awaitable SaveAsync(ScriptableObject data, string name)
         {
-            if (IsUnavailable()) return;
-
             var remoteData = new Dictionary<string, object> { { name, data } };
             var options = new SaveOptions(new PublicWriteAccessClassOptions());
             var savedData = await CloudSaveService.Instance.Data.Player.SaveAsync(remoteData, options);
@@ -33,8 +31,6 @@ namespace ActionCode.GameDataSystem
 
         public async Awaitable<string> LoadAsync(string name, string playerId = null)
         {
-            if (IsUnavailable()) return string.Empty;
-
             var options = new LoadOptions(new PublicReadAccessClassOptions(playerId));
             var data = await CloudPlayer.LoadAsync(new HashSet<string> { name }, options);
             var wasLoaded = data.TryGetValue(name, out var remoteData);
@@ -46,8 +42,6 @@ namespace ActionCode.GameDataSystem
 
         public async Awaitable<string[]> LoadAllAsync(string playerId)
         {
-            if (IsUnavailable()) return null;
-
             var options = new LoadAllOptions(new PublicReadAccessClassOptions(playerId));
             var data = await CloudPlayer.LoadAllAsync(options);
             var wasLoaded = data.Count > 0;
@@ -66,8 +60,6 @@ namespace ActionCode.GameDataSystem
 
         public async Awaitable<bool> DeleteAsync(string name)
         {
-            if (IsUnavailable()) return false;
-
             try
             {
                 var options = new DeleteOptions(new PublicWriteAccessClassOptions());
@@ -94,8 +86,6 @@ namespace ActionCode.GameDataSystem
 
         public async Awaitable<bool> DeleteAllAsync()
         {
-            if (IsUnavailable()) return false;
-
             try
             {
                 var options = new DeleteAllOptions(new PublicWriteAccessClassOptions());
@@ -113,8 +103,6 @@ namespace ActionCode.GameDataSystem
 
         public async Awaitable<string[]> ListRemoteKeys(string playerId = null)
         {
-            if (IsUnavailable()) return new string[0];
-
             var options = new ListAllKeysOptions(new PublicReadAccessClassOptions(playerId));
             var asyncKeys = await CloudPlayer.ListAllKeysAsync(options);
             var keys = new string[asyncKeys.Count];
