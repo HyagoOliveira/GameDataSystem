@@ -35,14 +35,18 @@ namespace ActionCode.GameDataSystem
             await TryDelete(name);
         }
 
-        public async Awaitable SaveAsync(string name, byte[] file, bool isPublic = false)
+        public async Awaitable SaveAsync(string name, byte[] file)
         {
             await CheckSignInAsync();
             await PlayerFiles.SaveAsync(name, file);
+        }
 
-            if (!isPublic) return;
+        public async Awaitable SavePubliclyAsync(string name, string data)
+        {
+            await CheckSignInAsync();
 
-            var remoteData = new Dictionary<string, object> { { name, file } };
+            name = System.IO.Path.GetFileNameWithoutExtension(name);
+            var remoteData = new Dictionary<string, object> { { name, data } };
             var options = new Unity.Services.CloudSave.Models.Data.Player.SaveOptions(new PublicWriteAccessClassOptions());
             await PlayerData.SaveAsync(remoteData, options);
         }

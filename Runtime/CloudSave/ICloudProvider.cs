@@ -39,10 +39,20 @@ namespace ActionCode.GameDataSystem
         /// The name of the file to save. 
         /// Don't forget include the extension.
         /// </param>
-        /// <param name="file">The byte array containing the file data</param>
-        /// <param name="isPublic">Whether to make the file public to be loaded from other account.</param>
+        /// <param name="file">The byte array containing the file data.</param>
         /// <returns>An asynchronous operation.</returns>
-        Awaitable SaveAsync(string name, byte[] file, bool isPublic = false);
+        Awaitable SaveAsync(string name, byte[] file);
+
+        /// <summary>
+        /// Saves a file to the cloud provider publicly.
+        /// </summary>
+        /// <param name="name">
+        /// The name of the file to save. 
+        /// Don't forget include the extension.
+        /// </param>
+        /// <param name="data">The string containing the file data.</param>
+        /// <returns>An asynchronous operation.</returns>
+        Awaitable SavePubliclyAsync(string name, string data);
 
         /// <summary>
         /// Loads a file from the cloud provider.
