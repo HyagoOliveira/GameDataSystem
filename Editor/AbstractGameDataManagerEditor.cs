@@ -47,12 +47,11 @@ namespace ActionCode.GameDataSystem.Editor
             EditorGUILayout.BeginHorizontal();
             if (IsButtonDown("Save")) manager.SaveAsync(currentSlot);
             if (IsButtonDown("Load")) manager.TryLoadAsync(currentSlot);
-            if (IsButtonDown("Cloud Load")) manager.LoadRemotelyAsync(currentSlot);
+            if (IsButtonDown("Load File")) manager.TryLoadAsync(GetSaveFilePath());
             if (IsButtonDown("Delete")) manager.DeleteAsync(currentSlot);
             EditorGUILayout.EndHorizontal();
 
             if (IsButtonDown("Delete All")) manager.DeleteAllAsync();
-            if (IsButtonDown("Load Save File")) manager.TryLoadAsync(GetSaveFilePath());
         }
 
         private void DrawOpenSaveFolderButton()
