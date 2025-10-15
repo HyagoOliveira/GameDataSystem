@@ -106,7 +106,14 @@ namespace ActionCode.GameDataSystem
 
             await Persistence.SaveAsync(Data, name);
             if (TryGetCloudProvider(out var provider))
-                await provider.SaveAsync(Data, name);
+            {
+                //TODO implement Persistence.LoadFileBytesAsync()
+                name += ".sv";
+                var path = @"C:\Users\Hyago Oliveira\AppData\LocalLow\1MBH\Game Template\Persistence\" + name;
+                var file = await System.IO.File.ReadAllBytesAsync(path);
+
+                await provider.SaveAsync(name, file);
+            }
 
             LastSlotIndex = slot;
             OnSaveFinished?.Invoke();
@@ -147,7 +154,11 @@ namespace ActionCode.GameDataSystem
             var name = GetSlotName(slot);
 
             if (TryGetCloudProvider(out var provider))
-                await provider.DeleteAsync(name);
+            {
+                //TODO add FileSystem.GetSaveName()
+                var cloudName = System.IO.Path.ChangeExtension(name, FileSystem.COMPRESSED_EXTENSION);
+                await provider.DeleteAsync(cloudName);
+            }
 
             Persistence.Delete(name);
         }
@@ -159,51 +170,18 @@ namespace ActionCode.GameDataSystem
                 await provider.DeleteAllAsync();
         }
 
-        /// <summary>
-        /// Raw file is human legible file (the pretty .json)
-        /// </summary>
-        /// <returns>Whether should load from the Raw File.</returns>
-        public static bool ShouldLoadFromRawFile() => Debug.isDebugBuild;
-
-        //TODO improve remote functions
-        #region REMOTE
         public bool TryGetCloudProvider(out ICloudProvider provider)
         {
             provider = GetCloudProvider();
             return provider != null && provider.IsAvailable();
         }
 
-        public ICloudProvider GetCloudProvider() => CloudProviderFactory.Create(cloudProvider);
+        private ICloudProvider GetCloudProvider() => CloudProviderFactory.Create(cloudProvider);
 
-        public async Awaitable LoadRemotelyAsync(int slot)
-        {
-            var hasProvider = TryGetCloudProvider(out var provider);
-            if (!hasProvider) return;
-
-            var name = GetSlotName(slot);
-            var json = await provider.LoadAsync(name);
-            var hasJson = !string.IsNullOrEmpty(json);
-            if (hasJson) Persistence.GetFileSystem().Serializer.Deserialize(json, ref gameData);
-        }
-
-        public async Awaitable<IList> LoadAllRemotelyAsync(string playerId)
-        {
-            var hasProvider = TryGetCloudProvider(out var provider);
-            if (!hasProvider) return null;
-
-            var remoteData = await provider.LoadAllAsync(playerId);
-            var gamesData = new T[remoteData.Count()];
-            var serializer = Persistence.GetFileSystem().Serializer;
-
-            for (var i = 0; i < gamesData.Length; i++)
-            {
-                var content = remoteData.ElementAt(i);
-                gamesData[i] = CreateInstance<T>();
-                serializer.Deserialize(content, ref gamesData[i]);
-            }
-
-            return gamesData;
-        }
-        #endregion
+        /// <summary>
+        /// Raw file is human legible file (the pretty .json)
+        /// </summary>
+        /// <returns>Whether should load from the Raw File.</returns>
+        public static bool ShouldLoadFromRawFile() => Debug.isDebugBuild;
     }
 }

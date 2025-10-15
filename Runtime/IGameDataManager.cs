@@ -1,5 +1,4 @@
 using UnityEngine;
-using System.Collections;
 using ActionCode.Persistence;
 
 namespace ActionCode.GameDataSystem
@@ -24,16 +23,13 @@ namespace ActionCode.GameDataSystem
         Awaitable SaveAsync();
         Awaitable SaveAsync(int slot);
 
-        Awaitable<bool> TryLoadFromLastSlotAsync();
-        Awaitable<bool> TryLoadAsync(int slot);
-        Awaitable<bool> TryLoadAsync(string path);
-        Awaitable LoadRemotelyAsync(int slot);
-
-        Awaitable DeleteAsync(int slot);
-        Awaitable DeleteAllAsync();
-
         Awaitable<bool> IsContinueAvailable();
 
-        Awaitable<IList> LoadAllRemotelyAsync(string playerId);
+        Awaitable<bool> TryLoadAsync(int slot);
+        Awaitable<bool> TryLoadAsync(string path);
+        Awaitable<bool> TryLoadFromLastSlotAsync();
+
+        Awaitable DeleteAllAsync();
+        Awaitable DeleteAsync(int slot);
     }
 }

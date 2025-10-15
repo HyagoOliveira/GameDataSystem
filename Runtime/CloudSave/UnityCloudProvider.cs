@@ -1,14 +1,11 @@
 #if UNITY_CLOUD_SAVE && UNITY_AUTHENTICATION
-using UnityEngine;
 using System.Collections.Generic;
+using Unity.Services.Core;
 using Unity.Services.CloudSave;
 using Unity.Services.CloudSave.Internal;
 using Unity.Services.CloudSave.Models.Data.Player;
-using SaveOptions = Unity.Services.CloudSave.Models.Data.Player.SaveOptions;
-using DeleteOptions = Unity.Services.CloudSave.Models.Data.Player.DeleteOptions;
-using DeleteAllOptions = Unity.Services.CloudSave.Models.Data.Player.DeleteAllOptions;
-using Unity.Services.Core;
 using Unity.Services.Authentication;
+using UnityEngine;
 
 namespace ActionCode.GameDataSystem
 {
@@ -17,126 +14,92 @@ namespace ActionCode.GameDataSystem
     /// </summary>
     public sealed class UnityCloudProvider : ICloudProvider
     {
-        public IPlayerDataService CloudPlayer => CloudSaveService.Instance.Data.Player;
+        public static IPlayerDataService PlayerData => CloudSaveService.Instance.Data.Player;
+        public static IPlayerFilesService PlayerFiles => CloudSaveService.Instance.Files.Player;
 
-        public bool IsAvailable() =>
-            Application.isPlaying &&
-            Application.internetReachability != NetworkReachability.NotReachable;
-
-        public async Awaitable SaveAsync(ScriptableObject data, string name)
+        public async Awaitable DeleteAllAsync()
         {
             await CheckSignInAsync();
 
-            var remoteData = new Dictionary<string, object> { { name, data } };
-            var options = new SaveOptions(new PublicWriteAccessClassOptions());
-            var savedData = await CloudSaveService.Instance.Data.Player.SaveAsync(remoteData, options);
-            var wasSaved = savedData.Count > 0;
-
-            Debug.Log($"Was {name} saved remotely? {wasSaved}");
+            var files = await PlayerFiles.ListAllAsync();
+            foreach (var file in files)
+            {
+                var name = file.Key;
+                await TryDelete(name);
+            }
         }
 
-        public async Awaitable<string> LoadAsync(string name, string playerId = null)
+        public async Awaitable DeleteAsync(string name)
+        {
+            await CheckSignInAsync();
+            await TryDelete(name);
+        }
+
+        public async Awaitable SaveAsync(string name, byte[] file, bool isPublic = false)
+        {
+            await CheckSignInAsync();
+            await PlayerFiles.SaveAsync(name, file);
+
+            if (!isPublic) return;
+
+            var remoteData = new Dictionary<string, object> { { name, file } };
+            var options = new Unity.Services.CloudSave.Models.Data.Player.SaveOptions(new PublicWriteAccessClassOptions());
+            await PlayerData.SaveAsync(remoteData, options);
+        }
+
+        public async Awaitable<string> LoadAsync(string name)
+        {
+            await CheckSignInAsync();
+            var data = await PlayerFiles.LoadBytesAsync(name);
+            return System.Text.Encoding.UTF8.GetString(data);
+        }
+
+        public async Awaitable<string> LoadAsync(string name, string playerId)
         {
             await CheckSignInAsync();
 
             var options = new LoadOptions(new PublicReadAccessClassOptions(playerId));
-            var data = await CloudPlayer.LoadAsync(new HashSet<string> { name }, options);
+            var data = await PlayerData.LoadAsync(new HashSet<string> { name }, options);
             var wasLoaded = data.TryGetValue(name, out var remoteData);
-
-            Debug.Log($"Was {name} loaded remotely? {wasLoaded}");
 
             return wasLoaded ? remoteData.Value.GetAsString() : string.Empty;
         }
 
-        public async Awaitable<string[]> LoadAllAsync(string playerId)
+        public async Awaitable<List<string>> LoadAllAsync()
         {
             await CheckSignInAsync();
 
-            var options = new LoadAllOptions(new PublicReadAccessClassOptions(playerId));
-            var data = await CloudPlayer.LoadAllAsync(options);
-            var wasLoaded = data.Count > 0;
+            var list = new List<string>();
+            var files = await PlayerFiles.ListAllAsync();
 
-            Debug.Log($"Was all data loaded remotely? {wasLoaded}");
-
-            var i = 0;
-            var remoteData = new string[data.Count];
-            foreach (var item in data.Values)
+            foreach (var file in files)
             {
-                remoteData[i++] = item.Value.GetAsString();
+                var name = file.Key;
+                var bytes = await PlayerFiles.LoadBytesAsync(name);
+                var data = System.Text.Encoding.UTF8.GetString(bytes);
+                list.Add(data);
             }
 
-            return remoteData;
-        }
-
-        public async Awaitable<bool> DeleteAsync(string name)
-        {
-            await CheckSignInAsync();
-
-            try
-            {
-                var options = new DeleteOptions(new PublicWriteAccessClassOptions());
-                await CloudPlayer.DeleteAsync(name, options);
-                Debug.Log($"{name} was deleted remotely.");
-                return true;
-            }
-            catch (CloudSaveException exception)
-            {
-                var wasDataNotFound = exception.Reason == CloudSaveExceptionReason.NotFound;
-                if (wasDataNotFound)
-                {
-                    Debug.LogWarning($"{name} was not found in Unity Cloud. Nothing deleted from there.");
-                    return true;
-                }
-            }
-            catch (System.Exception exception)
-            {
-                Debug.Log($"{name} was not deleted remotely.");
-                Debug.LogError(exception);
-            }
-            return false;
-        }
-
-        public async Awaitable<bool> DeleteAllAsync()
-        {
-            await CheckSignInAsync();
-
-            try
-            {
-                var options = new DeleteAllOptions(new PublicWriteAccessClassOptions());
-                await CloudPlayer.DeleteAllAsync(options);
-                Debug.Log("All data was deleted remotely.");
-                return true;
-            }
-            catch (System.Exception e)
-            {
-                Debug.Log("All data was not deleted remotely.");
-                Debug.LogError(e);
-            }
-            return false;
-        }
-
-        public async Awaitable<string[]> ListRemoteKeys(string playerId = null)
-        {
-            await CheckSignInAsync();
-
-            var options = new ListAllKeysOptions(new PublicReadAccessClassOptions(playerId));
-            var asyncKeys = await CloudPlayer.ListAllKeysAsync(options);
-            var keys = new string[asyncKeys.Count];
-
-            for (int i = 0; i < keys.Length; i++)
-            {
-                keys[i] = asyncKeys[i].Key;
-            }
-
-            return keys;
+            return list;
         }
 
         private static async Awaitable CheckSignInAsync()
         {
-            if (AuthenticationService.Instance.IsSignedIn) return;
-
             await UnityServices.InitializeAsync();
+            if (AuthenticationService.Instance.IsSignedIn) return;
             await AuthenticationService.Instance.SignInAnonymouslyAsync();
+        }
+
+        private async Awaitable TryDelete(string name)
+        {
+            try
+            {
+                await PlayerFiles.DeleteAsync(name);
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogException(e);
+            }
         }
     }
 }
