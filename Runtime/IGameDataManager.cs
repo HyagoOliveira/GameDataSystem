@@ -18,8 +18,6 @@ namespace ActionCode.GameDataSystem
         int AvailableSlots { get; }
         PersistenceSettings Persistence { get; }
 
-        bool HasCloudProvider();
-
         string GetSlotName(int slot);
         string GetSerializedExtension();
 
