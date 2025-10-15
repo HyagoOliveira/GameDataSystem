@@ -105,7 +105,8 @@ namespace ActionCode.GameDataSystem
             var name = GetSlotName(slot);
 
             await Persistence.SaveAsync(Data, name);
-            await GetCloudProvider()?.SaveAsync(Data, name);
+            if (TryGetCloudProvider(out var provider))
+                await provider.SaveAsync(Data, name);
 
             LastSlotIndex = slot;
             OnSaveFinished?.Invoke();
@@ -144,14 +145,18 @@ namespace ActionCode.GameDataSystem
         public async Awaitable DeleteAsync(int slot)
         {
             var name = GetSlotName(slot);
-            await GetCloudProvider()?.DeleteAsync(name);
+
+            if (TryGetCloudProvider(out var provider))
+                await provider.DeleteAsync(name);
+
             Persistence.Delete(name);
         }
 
         public async Awaitable DeleteAllAsync()
         {
             Persistence.DeleteAll();
-            await GetCloudProvider()?.DeleteAllAsync();
+            if (TryGetCloudProvider(out var provider))
+                await provider.DeleteAllAsync();
         }
 
         /// <summary>
@@ -162,19 +167,31 @@ namespace ActionCode.GameDataSystem
 
         //TODO improve remote functions
         #region REMOTE
+        public bool TryGetCloudProvider(out ICloudProvider provider)
+        {
+            provider = GetCloudProvider();
+            return provider != null && !provider.IsUnavailable();
+        }
+
         public ICloudProvider GetCloudProvider() => CloudProviderFactory.Create(cloudProvider);
 
         public async Awaitable LoadRemotelyAsync(int slot)
         {
+            var hasProvider = TryGetCloudProvider(out var provider);
+            if (!hasProvider) return;
+
             var name = GetSlotName(slot);
-            var json = await GetCloudProvider()?.LoadAsync(name);
+            var json = await provider.LoadAsync(name);
             var hasJson = !string.IsNullOrEmpty(json);
             if (hasJson) Persistence.GetFileSystem().Serializer.Deserialize(json, ref gameData);
         }
 
         public async Awaitable<IList> LoadAllRemotelyAsync(string playerId)
         {
-            var remoteData = await GetCloudProvider()?.LoadAllAsync(playerId);
+            var hasProvider = TryGetCloudProvider(out var provider);
+            if (!hasProvider) return null;
+
+            var remoteData = await provider.LoadAllAsync(playerId);
             var gamesData = new T[remoteData.Count()];
             var serializer = Persistence.GetFileSystem().Serializer;
 
