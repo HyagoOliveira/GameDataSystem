@@ -10,7 +10,10 @@ using DeleteAllOptions = Unity.Services.CloudSave.Models.Data.Player.DeleteAllOp
 
 namespace ActionCode.GameDataSystem
 {
-    public sealed class UnityCloudService : ICloudProvider
+    /// <summary>
+    /// Provider for Unity Cloud Save service.
+    /// </summary>
+    public sealed class UnityCloudProvider : ICloudProvider
     {
         public IPlayerDataService CloudPlayer => CloudSaveService.Instance.Data.Player;
 

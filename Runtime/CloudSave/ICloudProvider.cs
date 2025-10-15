@@ -2,6 +2,9 @@ using UnityEngine;
 
 namespace ActionCode.GameDataSystem
 {
+    /// <summary>
+    /// Interface for a cloud save provider.
+    /// </summary>
     public interface ICloudProvider
     {
         bool IsUnavailable();

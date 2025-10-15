@@ -178,7 +178,7 @@ namespace ActionCode.GameDataSystem
         private static ICloudProvider GetavailableCloudProvider()
         {
 #if UNITY_CLOUD_SAVE
-            return new UnityCloudService();
+            return new UnityCloudProvider();
 #else
             return null;
 #endif
