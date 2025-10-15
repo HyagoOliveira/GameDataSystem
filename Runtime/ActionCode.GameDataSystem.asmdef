@@ -3,6 +3,7 @@
     "rootNamespace": "ActionCode.GameDataSystem",
     "references": [
         "GUID:97b1f0f13e154439ba5fea6e086de8af",
+        "GUID:5540e30183c82e84b954c033c388e06c",
         "GUID:fe25561d224ed4743af4c60938a59d0b",
         "GUID:be0d2672886cc45b2bcea5a5053a5347"
     ],
@@ -18,6 +19,11 @@
             "name": "com.unity.services.cloudsave",
             "expression": "1.0.0",
             "define": "UNITY_CLOUD_SAVE"
+        },
+        {
+            "name": "com.unity.services.authentication",
+            "expression": "1.0.0",
+            "define": "UNITY_AUTHENTICATION"
         }
     ],
     "noEngineReferences": false

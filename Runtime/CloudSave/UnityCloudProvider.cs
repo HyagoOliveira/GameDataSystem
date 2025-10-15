@@ -1,4 +1,4 @@
-#if UNITY_CLOUD_SAVE
+#if UNITY_CLOUD_SAVE && UNITY_AUTHENTICATION
 using UnityEngine;
 using System.Collections.Generic;
 using Unity.Services.CloudSave;
@@ -7,6 +7,8 @@ using Unity.Services.CloudSave.Models.Data.Player;
 using SaveOptions = Unity.Services.CloudSave.Models.Data.Player.SaveOptions;
 using DeleteOptions = Unity.Services.CloudSave.Models.Data.Player.DeleteOptions;
 using DeleteAllOptions = Unity.Services.CloudSave.Models.Data.Player.DeleteAllOptions;
+using Unity.Services.Core;
+using Unity.Services.Authentication;
 
 namespace ActionCode.GameDataSystem
 {
@@ -17,10 +19,14 @@ namespace ActionCode.GameDataSystem
     {
         public IPlayerDataService CloudPlayer => CloudSaveService.Instance.Data.Player;
 
-        public bool IsAvailable() => Application.isPlaying;
+        public bool IsAvailable() =>
+            Application.isPlaying &&
+            Application.internetReachability != NetworkReachability.NotReachable;
 
         public async Awaitable SaveAsync(ScriptableObject data, string name)
         {
+            await CheckSignInAsync();
+
             var remoteData = new Dictionary<string, object> { { name, data } };
             var options = new SaveOptions(new PublicWriteAccessClassOptions());
             var savedData = await CloudSaveService.Instance.Data.Player.SaveAsync(remoteData, options);
@@ -31,6 +37,8 @@ namespace ActionCode.GameDataSystem
 
         public async Awaitable<string> LoadAsync(string name, string playerId = null)
         {
+            await CheckSignInAsync();
+
             var options = new LoadOptions(new PublicReadAccessClassOptions(playerId));
             var data = await CloudPlayer.LoadAsync(new HashSet<string> { name }, options);
             var wasLoaded = data.TryGetValue(name, out var remoteData);
@@ -42,6 +50,8 @@ namespace ActionCode.GameDataSystem
 
         public async Awaitable<string[]> LoadAllAsync(string playerId)
         {
+            await CheckSignInAsync();
+
             var options = new LoadAllOptions(new PublicReadAccessClassOptions(playerId));
             var data = await CloudPlayer.LoadAllAsync(options);
             var wasLoaded = data.Count > 0;
@@ -60,6 +70,8 @@ namespace ActionCode.GameDataSystem
 
         public async Awaitable<bool> DeleteAsync(string name)
         {
+            await CheckSignInAsync();
+
             try
             {
                 var options = new DeleteOptions(new PublicWriteAccessClassOptions());
@@ -86,6 +98,8 @@ namespace ActionCode.GameDataSystem
 
         public async Awaitable<bool> DeleteAllAsync()
         {
+            await CheckSignInAsync();
+
             try
             {
                 var options = new DeleteAllOptions(new PublicWriteAccessClassOptions());
@@ -103,6 +117,8 @@ namespace ActionCode.GameDataSystem
 
         public async Awaitable<string[]> ListRemoteKeys(string playerId = null)
         {
+            await CheckSignInAsync();
+
             var options = new ListAllKeysOptions(new PublicReadAccessClassOptions(playerId));
             var asyncKeys = await CloudPlayer.ListAllKeysAsync(options);
             var keys = new string[asyncKeys.Count];
@@ -113,6 +129,14 @@ namespace ActionCode.GameDataSystem
             }
 
             return keys;
+        }
+
+        private static async Awaitable CheckSignInAsync()
+        {
+            if (AuthenticationService.Instance.IsSignedIn) return;
+
+            await UnityServices.InitializeAsync();
+            await AuthenticationService.Instance.SignInAnonymouslyAsync();
         }
     }
 }
