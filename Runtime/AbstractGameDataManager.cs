@@ -97,12 +97,19 @@ namespace ActionCode.GameDataSystem
 
         public async Awaitable SaveAsync() => await SaveAsync(LastSlotIndex);
 
+        /// <summary>
+        /// Saves the current game data remotely to cloud service using Public Access so it can be fetched by other players.
+        /// </summary>
+        /// <param name="name">The name of the file to save. Don't use special characters.</param>
+        /// <param name="cloudType">The Cloud Provider to use.</param>
+        /// <returns>An asynchronous operation.</returns>
         public async Awaitable SavePublicAsync(string name, CloudProviderType cloudType)
         {
-            var provider = CloudProviderFactory.Create(cloudType);
-            if (provider == null || !provider.IsAvailable()) return;
+            if (!TryGetCloudProvider(out var provider, cloudType)) return;
 
-            var data = persistence.GetFileSystem().Serializer.Serialize(Data);
+            var serializer = persistence.GetFileSystem().Serializer;
+            var data = serializer.Serialize(Data);
+
             await provider.SavePublicAsync(name, data);
         }
 
@@ -179,13 +186,24 @@ namespace ActionCode.GameDataSystem
                 await provider.DeleteAllAsync();
         }
 
-        public bool TryGetCloudProvider(out ICloudProvider provider)
+        /// <summary>
+        /// Tries to get the Cloud Provider using the local <see cref="cloudProvider"/>.
+        /// </summary>
+        /// <param name="provider">The fetched cloud provider instance.</param>
+        /// <returns>Whether could find the Cloud provider.</returns>
+        public bool TryGetCloudProvider(out ICloudProvider provider) => TryGetCloudProvider(out provider, cloudProvider);
+
+        /// <summary>
+        /// Tries to get the Cloud Provider using the given params.
+        /// </summary>
+        /// <param name="provider"><inheritdoc cref="TryGetCloudProvider(out ICloudProvider)" path="/param[@name='provider']"/></param>
+        /// <param name="providerType">The Cloud Provider to use.</param>
+        /// <returns><inheritdoc cref="TryGetCloudProvider(out ICloudProvider)"/></returns>
+        public bool TryGetCloudProvider(out ICloudProvider provider, CloudProviderType providerType)
         {
-            provider = GetCloudProvider();
+            provider = CloudProviderFactory.Create(providerType);
             return provider != null && provider.IsAvailable();
         }
-
-        private ICloudProvider GetCloudProvider() => CloudProviderFactory.Create(cloudProvider);
 
         /// <summary>
         /// Raw file is human legible file (the pretty .json)
