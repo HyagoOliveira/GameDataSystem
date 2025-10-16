@@ -97,22 +97,6 @@ namespace ActionCode.GameDataSystem
 
         public async Awaitable SaveAsync() => await SaveAsync(LastSlotIndex);
 
-        /// <summary>
-        /// Saves the current game data remotely to cloud service using Public Access so it can be fetched by other players.
-        /// </summary>
-        /// <param name="name">The name of the file to save. Don't use special characters.</param>
-        /// <param name="cloudType">The Cloud Provider to use.</param>
-        /// <returns>An asynchronous operation.</returns>
-        public async Awaitable SavePublicAsync(string name, CloudProviderType cloudType)
-        {
-            if (!TryGetCloudProvider(out var provider, cloudType)) return;
-
-            var serializer = persistence.GetFileSystem().Serializer;
-            var data = serializer.Serialize(Data);
-
-            await provider.SavePublicAsync(name, data);
-        }
-
         public async Awaitable SaveAsync(int slot)
         {
             OnSaveStarted?.Invoke();
@@ -123,16 +107,39 @@ namespace ActionCode.GameDataSystem
             await Persistence.SaveAsync(Data, name);
             if (TryGetCloudProvider(out var provider))
             {
-                //TODO implement Persistence.LoadFileBytesAsync()
-                name += ".sv";
-                var path = @"C:\Users\Hyago Oliveira\AppData\LocalLow\1MBH\Game Template\Persistence\" + name;
-                var file = await System.IO.File.ReadAllBytesAsync(path);
-
-                await provider.SaveAsync(name, file);
+                var file = await Persistence.LoadBytesAsync(name);
+                await provider.SaveAsync(name, FileSystem.COMPRESSED_EXTENSION, file);
             }
 
             LastSlotIndex = slot;
             OnSaveFinished?.Invoke();
+        }
+
+        /// <summary>
+        /// Uploads the current Game Data to the Cloud Service using Public Access so it can be download 
+        /// using <see cref="DownloadAsync(int, string, string, CloudProviderType)"/> function.
+        /// </summary>
+        /// <param name="name">The name of the file to save. Don't use special characters.</param>
+        /// <param name="cloudType">The Cloud Provider to use.</param>
+        /// <returns>An asynchronous operation.</returns>
+        public async Awaitable UploadAsync(string name, CloudProviderType cloudType)
+        {
+            if (!TryGetCloudProvider(out var provider, cloudType)) return;
+
+            var serializer = persistence.GetFileSystem().Serializer;
+            var data = serializer.Serialize(Data);
+
+            await provider.UploadAsync(name, data);
+        }
+
+        public async Awaitable DownloadAsync(int slot, string name, string playerId, CloudProviderType cloudType)
+        {
+            if (!TryGetCloudProvider(out var provider, cloudType)) return;
+
+            var slotName = GetSlotName(slot);
+            var content = await provider.DownloadAsync(name, playerId);
+
+            await persistence.SaveAsync(slotName, content);
         }
 
         public async Awaitable<bool> TryLoadAsync(string path) => await Persistence.TryLoadAsync(Data, path);

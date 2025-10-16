@@ -17,6 +17,12 @@ namespace ActionCode.GameDataSystem
         public static IPlayerDataService PlayerData => CloudSaveService.Instance.Data.Player;
         public static IPlayerFilesService PlayerFiles => CloudSaveService.Instance.Files.Player;
 
+        public async Awaitable<string> GetPlayerId()
+        {
+            await CheckSignInAsync();
+            return AuthenticationService.Instance.PlayerId;
+        }
+
         public async Awaitable DeleteAllAsync()
         {
             await CheckSignInAsync();
@@ -35,20 +41,10 @@ namespace ActionCode.GameDataSystem
             await TryDelete(name);
         }
 
-        public async Awaitable SaveAsync(string name, byte[] file)
+        public async Awaitable SaveAsync(string name, string extension, byte[] file)
         {
             await CheckSignInAsync();
-            await PlayerFiles.SaveAsync(name, file);
-        }
-
-        public async Awaitable SavePublicAsync(string name, string data)
-        {
-            await CheckSignInAsync();
-
-            name = System.IO.Path.GetFileNameWithoutExtension(name); // Throws exception if name contains '.'
-            var remoteData = new Dictionary<string, object> { { name, data } };
-            var options = new Unity.Services.CloudSave.Models.Data.Player.SaveOptions(new PublicWriteAccessClassOptions());
-            await PlayerData.SaveAsync(remoteData, options);
+            await PlayerFiles.SaveAsync($"{name}.{extension}", file);
         }
 
         public async Awaitable<string> LoadAsync(string name)
@@ -58,18 +54,7 @@ namespace ActionCode.GameDataSystem
             return System.Text.Encoding.UTF8.GetString(data);
         }
 
-        public async Awaitable<string> LoadAsync(string name, string playerId)
-        {
-            await CheckSignInAsync();
-
-            var options = new LoadOptions(new PublicReadAccessClassOptions(playerId));
-            var data = await PlayerData.LoadAsync(new HashSet<string> { name }, options);
-            var wasLoaded = data.TryGetValue(name, out var remoteData);
-
-            return wasLoaded ? remoteData.Value.GetAsString() : string.Empty;
-        }
-
-        public async Awaitable<List<string>> LoadAllAsync()
+        public async Awaitable<List<string>> LoadAllNamesAsync()
         {
             await CheckSignInAsync();
 
@@ -87,12 +72,29 @@ namespace ActionCode.GameDataSystem
             return list;
         }
 
-        private static async Awaitable CheckSignInAsync()
+        public async Awaitable UploadAsync(string name, string content)
         {
-            await UnityServices.InitializeAsync();
-            if (AuthenticationService.Instance.IsSignedIn) return;
-            await AuthenticationService.Instance.SignInAnonymouslyAsync();
+            await CheckSignInAsync();
+            var remoteData = new Dictionary<string, object> { { GetValidKey(name), content } };
+            var options = new Unity.Services.CloudSave.Models.Data.Player.SaveOptions(new PublicWriteAccessClassOptions());
+            await PlayerData.SaveAsync(remoteData, options);
         }
+
+        public async Awaitable<string> DownloadAsync(string name, string playerId)
+        {
+            await CheckSignInAsync();
+
+            var options = new LoadOptions(new PublicReadAccessClassOptions(playerId));
+            var data = await PlayerData.LoadAsync(new HashSet<string> { name }, options);
+            var wasLoaded = data.TryGetValue(name, out var remoteData);
+
+            return wasLoaded ? remoteData.Value.GetAsString() : string.Empty;
+        }
+
+        public static string GetValidKey(string name) => name.
+            Replace(" ", "_").
+            Replace(".", "_").
+            Trim();
 
         private async Awaitable TryDelete(string name)
         {
@@ -104,6 +106,13 @@ namespace ActionCode.GameDataSystem
             {
                 Debug.LogException(e);
             }
+        }
+
+        private static async Awaitable CheckSignInAsync()
+        {
+            await UnityServices.InitializeAsync();
+            if (AuthenticationService.Instance.IsSignedIn) return;
+            await AuthenticationService.Instance.SignInAnonymouslyAsync();
         }
     }
 }

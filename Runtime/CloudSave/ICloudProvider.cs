@@ -4,10 +4,16 @@ using System.Collections.Generic;
 namespace ActionCode.GameDataSystem
 {
     /// <summary>
-    /// Interface for a cloud save provider.
+    /// Interface for objects able to be Cloud Provider.
     /// </summary>
     public interface ICloudProvider
     {
+        /// <summary>
+        /// Returns the current player Cloud ID.
+        /// </summary>
+        /// <returns>An asynchronous operation.</returns>
+        Awaitable<string> GetPlayerId();
+
         /// <summary>
         /// Whether the cloud provider is available.
         /// </summary>
@@ -25,9 +31,7 @@ namespace ActionCode.GameDataSystem
         /// <summary>
         /// Deletes a file from the cloud provider.
         /// </summary>
-        /// <param name="name">
-        /// The name of the file to delete. 
-        /// Don't forget include the extension.
+        /// <param name="name">The file name. Don't use any special characters. 
         /// </param>
         /// <returns>An asynchronous operation.</returns>
         Awaitable DeleteAsync(string name);
@@ -35,51 +39,40 @@ namespace ActionCode.GameDataSystem
         /// <summary>
         /// Saves a file to the cloud provider.
         /// </summary>
-        /// <param name="name">
-        /// The name of the file to save. 
-        /// Don't forget include the extension.
-        /// </param>
+        /// <param name="name"><inheritdoc cref="DeleteAsync(string)" path="/param[@name='name']"/></param>
+        /// <param name="extension">The file extension.</param>
         /// <param name="file">The byte array containing the file data.</param>
         /// <returns>An asynchronous operation.</returns>
-        Awaitable SaveAsync(string name, byte[] file);
-
-        /// <summary>
-        /// Saves a file to the cloud provider using Public Access.
-        /// </summary>
-        /// <param name="name">
-        /// The name of the file to save. 
-        /// Don't include the extension.
-        /// </param>
-        /// <param name="data">The string containing the file data.</param>
-        /// <returns>An asynchronous operation.</returns>
-        Awaitable SavePublicAsync(string name, string data);
+        Awaitable SaveAsync(string name, string extension, byte[] file);
 
         /// <summary>
         /// Loads a file from the cloud provider.
         /// </summary>
-        /// <param name="name">
-        /// The name of the file to load. 
-        /// Don't forget include the extension.
-        /// </param>
+        /// <param name="name"><inheritdoc cref="DeleteAsync(string)" path="/param[@name='name']"/></param>
         /// <returns>An asynchronous operation.</returns>
         Awaitable<string> LoadAsync(string name);
 
         /// <summary>
-        /// Loads a file from the cloud provider using the given player id. 
-        /// Only files saved using Public Access can be loaded.
+        /// Loads all the file names from the cloud provider.
         /// </summary>
-        /// <param name="name">
-        /// The name of the file to load. 
-        /// Don't forget include the extension.
-        /// </param>
-        /// <param name="playerId">Player ID to read from.</param>
         /// <returns>An asynchronous operation.</returns>
-        Awaitable<string> LoadAsync(string name, string playerId);
+        Awaitable<List<string>> LoadAllNamesAsync();
 
         /// <summary>
-        /// Loads all file names from the cloud provider.
+        /// Uploads the given data content using Public Access so it can be download for other players.
         /// </summary>
+        /// <param name="name"><inheritdoc cref="DeleteAsync(string)" path="/param[@name='name']"/></param>
+        /// <param name="content">The data content.</param>
         /// <returns>An asynchronous operation.</returns>
-        Awaitable<List<string>> LoadAllAsync();
+        Awaitable UploadAsync(string name, string content);
+
+        /// <summary>
+        /// Downloads a file from the cloud provider using the given file name and the player id. 
+        /// Only files uploaded using Public Access can be downloaded.
+        /// </summary>
+        /// <param name="name"><inheritdoc cref="DeleteAsync(string)" path="/param[@name='name']"/></param>
+        /// <param name="playerId">Player ID to read from.</param>
+        /// <returns>An asynchronous operation.</returns>
+        Awaitable<string> DownloadAsync(string name, string playerId);
     }
 }
