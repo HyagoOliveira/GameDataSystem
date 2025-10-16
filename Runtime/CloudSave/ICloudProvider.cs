@@ -44,15 +44,15 @@ namespace ActionCode.GameDataSystem
         Awaitable SaveAsync(string name, byte[] file);
 
         /// <summary>
-        /// Saves a file to the cloud provider publicly.
+        /// Saves a file to the cloud provider using Public Access.
         /// </summary>
         /// <param name="name">
         /// The name of the file to save. 
-        /// Don't forget include the extension.
+        /// Don't include the extension.
         /// </param>
         /// <param name="data">The string containing the file data.</param>
         /// <returns>An asynchronous operation.</returns>
-        Awaitable SavePubliclyAsync(string name, string data);
+        Awaitable SavePublicAsync(string name, string data);
 
         /// <summary>
         /// Loads a file from the cloud provider.
@@ -65,7 +65,8 @@ namespace ActionCode.GameDataSystem
         Awaitable<string> LoadAsync(string name);
 
         /// <summary>
-        /// Loads a file from the cloud provider using the given player id.
+        /// Loads a file from the cloud provider using the given player id. 
+        /// Only files saved using Public Access can be loaded.
         /// </summary>
         /// <param name="name">
         /// The name of the file to load. 

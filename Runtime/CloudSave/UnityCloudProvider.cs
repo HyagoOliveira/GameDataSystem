@@ -41,11 +41,11 @@ namespace ActionCode.GameDataSystem
             await PlayerFiles.SaveAsync(name, file);
         }
 
-        public async Awaitable SavePubliclyAsync(string name, string data)
+        public async Awaitable SavePublicAsync(string name, string data)
         {
             await CheckSignInAsync();
 
-            name = System.IO.Path.GetFileNameWithoutExtension(name);
+            name = System.IO.Path.GetFileNameWithoutExtension(name); // Throws exception if name contains '.'
             var remoteData = new Dictionary<string, object> { { name, data } };
             var options = new Unity.Services.CloudSave.Models.Data.Player.SaveOptions(new PublicWriteAccessClassOptions());
             await PlayerData.SaveAsync(remoteData, options);

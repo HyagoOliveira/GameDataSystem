@@ -97,17 +97,13 @@ namespace ActionCode.GameDataSystem
 
         public async Awaitable SaveAsync() => await SaveAsync(LastSlotIndex);
 
-        public async Awaitable SaveAsync(CloudProviderType cloudType)
+        public async Awaitable SavePublicAsync(string name, CloudProviderType cloudType)
         {
-            await SaveAsync();
-
             var provider = CloudProviderFactory.Create(cloudType);
             if (provider == null || !provider.IsAvailable()) return;
 
-            var name = GetSlotName(LastSlotIndex);
             var data = persistence.GetFileSystem().Serializer.Serialize(Data);
-
-            await provider.SavePubliclyAsync(name, data);
+            await provider.SavePublicAsync(name, data);
         }
 
         public async Awaitable SaveAsync(int slot)

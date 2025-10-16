@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 
 ### Added
+- Public Cloud Save
+- Unity Cloud Provider
+- Cloud Save/Delete/Load from CloudProvider
 - GameDataBuildReseter
 
 ## [0.5.1] - 2025-10-11
