@@ -22,7 +22,7 @@ namespace ActionCode.GameDataSystem
 #if UNITY_CLOUD_SAVE && UNITY_AUTHENTICATION
             return new UnityCloudProvider();
 #endif
-            throw new System.NotSupportedException("Unity Cloud Save package is not present. Install Unity Authentication and Cloud Save.");
+            throw new System.NotSupportedException("Unity Cloud Save is not present. Please install Unity Authentication and Cloud Save packages.");
         }
     }
 }
