@@ -105,10 +105,10 @@ namespace ActionCode.GameDataSystem
             var name = GetSlotName(slot);
 
             await Persistence.SaveAsync(Data, name);
-            if (TryGetCloudProvider(out var provider))
+            if (TryGetCloudProvider(out var cloudProvider))
             {
-                var file = await Persistence.LoadBytesAsync(name);
-                await provider.SaveAsync(name, FileSystem.COMPRESSED_EXTENSION, file);
+                var stream = Persistence.LoadStream(name);
+                await cloudProvider.SaveAsync(name, FileSystem.COMPRESSED_EXTENSION, stream);
             }
 
             LastSlotIndex = slot;

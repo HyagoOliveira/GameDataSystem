@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.IO;
 using System.Collections.Generic;
 
 namespace ActionCode.GameDataSystem
@@ -17,7 +18,7 @@ namespace ActionCode.GameDataSystem
         /// <summary>
         /// Whether the cloud provider is available.
         /// </summary>
-        /// <returns>True if is play mode and has internet.</returns>
+        /// <returns>True if is play mode and has Internet.</returns>
         bool IsAvailable() =>
             Application.isPlaying &&
             Application.internetReachability != NetworkReachability.NotReachable;
@@ -41,9 +42,9 @@ namespace ActionCode.GameDataSystem
         /// </summary>
         /// <param name="name"><inheritdoc cref="DeleteAsync(string)" path="/param[@name='name']"/></param>
         /// <param name="extension">The file extension.</param>
-        /// <param name="file">The byte array containing the file data.</param>
+        /// <param name="stream">The Stream containing the file data.</param>
         /// <returns>An asynchronous operation.</returns>
-        Awaitable SaveAsync(string name, string extension, byte[] file);
+        Awaitable SaveAsync(string name, string extension, Stream stream);
 
         /// <summary>
         /// Loads a file from the cloud provider.

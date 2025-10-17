@@ -1,4 +1,5 @@
 #if UNITY_CLOUD_SAVE && UNITY_AUTHENTICATION
+using System.IO;
 using System.Collections.Generic;
 using Unity.Services.Core;
 using Unity.Services.CloudSave;
@@ -41,10 +42,10 @@ namespace ActionCode.GameDataSystem
             await TryDelete(name);
         }
 
-        public async Awaitable SaveAsync(string name, string extension, byte[] file)
+        public async Awaitable SaveAsync(string name, string extension, Stream stream)
         {
             await CheckSignInAsync();
-            await PlayerFiles.SaveAsync($"{name}.{extension}", file);
+            await PlayerFiles.SaveAsync($"{name}.{extension}", stream);
         }
 
         public async Awaitable<string> LoadAsync(string name)
