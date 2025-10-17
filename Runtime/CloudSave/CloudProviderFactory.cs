@@ -13,8 +13,16 @@ namespace ActionCode.GameDataSystem
         public static ICloudProvider Create(CloudProviderType type) => type switch
         {
             CloudProviderType.None => null,
-            CloudProviderType.UnityCloud => new UnityCloudProvider(),
+            CloudProviderType.UnityCloud => CheckForUnityCloudProvider(),
             _ => null
         };
+
+        private static ICloudProvider CheckForUnityCloudProvider()
+        {
+#if UNITY_CLOUD_SAVE && UNITY_AUTHENTICATION
+            return new UnityCloudProvider();
+#endif
+            throw new System.NotSupportedException("Unity Cloud Save package is not present. Install Unity Authentication and Cloud Save.");
+        }
     }
 }
