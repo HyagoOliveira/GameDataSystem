@@ -61,11 +61,7 @@ namespace ActionCode.GameDataSystem
         public string GetSlotName(int slot) => $"{slotName}-{slot:D2}";
         public string GetSerializedExtension() => Persistence.GetFileSystem().Serializer.Extension;
 
-        /// <summary>
-        /// Pretty data is human legible text file (like a pretty .json file).
-        /// </summary>
-        /// <returns>Whether should use a Pretty data.</returns>
-        public static bool IsAbleToUsePrettyData() => Debug.isDebugBuild;
+
 
         #region SAVING
         public async Awaitable SaveAsync() => await SaveAsync(LastSlotIndex);
@@ -77,9 +73,8 @@ namespace ActionCode.GameDataSystem
 
             var name = GetSlotName(slot);
             var fileSystem = Persistence.GetFileSystem();
-            var savePrettyData = IsAbleToUsePrettyData();
 
-            await fileSystem.SaveAsync(Data, name, savePrettyData);
+            await fileSystem.SaveAsync(Data, name);
             if (TryGetCloudProvider(out var cloudProvider))
             {
                 var stream = fileSystem.LoadStream(name);
@@ -95,13 +90,12 @@ namespace ActionCode.GameDataSystem
         public async Awaitable<bool> IsContinueAvailable() => await HasLastSlotAvailable();
         public async Awaitable<bool> HasLastSlotAvailable() => await TryLoadAsync(CreateInstance<T>(), LastSlotIndex);
         public async Awaitable<bool> TryLoadAsync(int slot) => await TryLoadAsync(Data, slot);
-        public async Awaitable<bool> TryLoadAsync(string path) => await Persistence.GetFileSystem().TryLoadAsync(path, Data);
+        public async Awaitable<bool> TryLoadAsync(string path) => await Persistence.GetFileSystem().TryLoadFromPathAsync(Data, path);
 
         public async Awaitable<bool> TryLoadAsync(T data, int slot)
         {
             var name = GetSlotName(slot);
-            var usePrettyFile = IsAbleToUsePrettyData();
-            return await Persistence.GetFileSystem().TryLoadAsync(name, data, usePrettyFile);
+            return await Persistence.GetFileSystem().TryLoadAsync(data, name, useCompressedData: false);
         }
 
         public async Awaitable<bool> TryLoadFromLastSlotAsync()
@@ -137,13 +131,12 @@ namespace ActionCode.GameDataSystem
             var names = FileSystem.GetFileNames();
             var slots = new T[names.Count()];
             var fileSystem = Persistence.GetFileSystem();
-            var useCompressedFile = !IsAbleToUsePrettyData();
 
             for (var i = 0; i < slots.Length; i++)
             {
                 slots[i] = CreateInstance<T>();
                 var name = names.ElementAt(i);
-                await fileSystem.TryLoadAsync(name, slots[i], useCompressedFile);
+                await fileSystem.TryLoadAsync(slots[i], name, useCompressedData: false);
             }
 
             return slots;
@@ -188,9 +181,8 @@ namespace ActionCode.GameDataSystem
 
             var slotName = GetSlotName(slot);
             var content = await provider.DownloadAsync(name, playerId);
-            var savePrettyData = IsAbleToUsePrettyData();
 
-            await Persistence.GetFileSystem().SaveAsync(content, slotName, savePrettyData);
+            await Persistence.GetFileSystem().SaveAsync(content, slotName);
         }
         #endregion
 
