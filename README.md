@@ -34,7 +34,7 @@ public sealed class GameData : AbstractGameData
 
 `AbstractGameData` is an abstract `ScriptableObject`, so your class should use the `CreateAssetMenu` attribute.
 
-Create an asset for `GameData`.
+Create an asset for the `GameData`.
 
 ![The GameData Asset](/Docs~/GameData.png "The GameData Asset")
 
@@ -43,6 +43,8 @@ Those serialized fields are based in a commom slot based GameData file. No need 
 In large projects, you can easily find the GameData asset by going into the Tools > Find > GameData.
 
 ![The Find Game Data](/Docs~/FindGameData.png "Find Game Data")
+
+You can referenciate and use the `GameData` asset in every gameplay component that needs to use the persistent data.
 
 ### Creating the Game Data Manager
 
@@ -60,11 +62,11 @@ public class GameDataManager : AbstractGameDataManager<GameData> // <- Put here 
 
 `AbstractGameDataManager` is also an abstract `ScriptableObject`, so you should use the `CreateAssetMenu` attribute as well.
 
-Create an asset for `GameDataManager`.
+Create an asset for the `GameDataManager`.
 
 ![The GameDataManager Asset](/Docs~/GameDataManager.png "The GameDataManager Asset")
 
-Link your GameData and a [PersistenceSettings](https://github.com/HyagoOliveira/Persistence?tab=readme-ov-file#creating-the-persistence-settings) asset.
+Link your GameData and a PersistenceSettings asset. Check [Creating the Persistence Settings](https://github.com/HyagoOliveira/Persistence?tab=readme-ov-file#creating-the-persistence-settings) for more details.
 
 In the Editor, use the Game Data Manager buttons to locally Save, Load (also from a file) and Delete the referenced GameData, using the Current Slot to do the operation.
 
@@ -139,6 +141,35 @@ No code change is necessary. You can use the current code to save and delete dat
 You can upload the Game Data from the given slot to the Cloud. The file uses Public Access so it can be downloaded later by other user.
 
 Use the asynchronous functions `UploadAsync` and `DownloadAsync`.
+
+```csharp
+ private async void OnUploadClicked()
+ {
+     try
+     {
+         await dataManager.UploadAsync(); // Uploads the current GameData into the Cloud, using your Cloud user id
+     }
+     catch (Exception e)
+     {
+         Debug.LogException(e);
+     }
+ }
+
+private async void OnDownloadClicked()
+{
+    try
+    {
+		var slot = 0;
+		var cloudId = "C5ispOuuUIed0UwYoYR6XlJ3nlmt";		
+        await dataManager.DownloadAsync(slot, cloudId); // Downloads the CloudData and places it into the slot 0
+        var wasLoaded = await dataManager.TryLoadAsync(slot); // Loads from the slot 0
+    }
+    catch (Exception e)
+    {
+        Debug.LogException(e);
+    }
+}
+```
 
 ## Installation
 
