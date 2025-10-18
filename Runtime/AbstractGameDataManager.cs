@@ -187,7 +187,7 @@ namespace ActionCode.GameDataSystem
             var data = CreateInstance<T>();
             var content = await provider.DownloadAsync(filename, cloudId);
             var isContentEmpty = string.IsNullOrEmpty(content);
-            if (isContentEmpty) throw new ArgumentException($"No file '{filename}' found on Cloud Provider '{cloudType}' Public Files.");
+            if (isContentEmpty) throw new Exception($"Player '{cloudId}' does not have a Public File '{filename}' on Cloud Provider '{cloudType}'.");
 
             var fileSystem = Persistence.GetFileSystem();
             await fileSystem.DeserializeAsync(data, content, isCompressed: true);
