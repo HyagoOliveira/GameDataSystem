@@ -1,8 +1,8 @@
 using System;
 using System.Linq;
 using System.Collections;
-using ActionCode.Persistence;
 using UnityEngine;
+using ActionCode.Persistence;
 
 namespace ActionCode.GameDataSystem
 {
@@ -28,17 +28,17 @@ namespace ActionCode.GameDataSystem
         public CloudProviderType cloudProvider;
 
         /// <summary>
-        /// Action fired when the save process starts.
+        /// Event fired when the Saving process starts.
         /// </summary>
         public event Action OnSaveStarted;
 
         /// <summary>
-        /// Action fired when the save process finishes.
+        /// Event fired when the Saving process finishes.
         /// </summary>
         public event Action OnSaveFinished;
 
         /// <summary>
-        /// The Game main data.
+        /// The Game data.
         /// </summary>
         public T Data => gameData;
         public int AvailableSlots => availableSlots;
@@ -58,43 +58,16 @@ namespace ActionCode.GameDataSystem
 
         private void OnValidate() => availableSlots = Mathf.Clamp(availableSlots, 1, MAX_SLOTS);
 
-        public void LoadData(T data)
-        {
-            // Cannot set SerializeField gameData = data
-
-            var serializer = Persistence.GetFileSystem().Serializer;
-            var content = serializer.Serialize(data);
-
-            // SOs are designed to persist data between Scenes only in the Editor, not on Builds.
-            // In a Build, a SO resets its values when transitioning between Scenes if not referenced
-            // by any reference in memory.
-
-            serializer.Deserialize(content, ref gameData);
-            LastSlotIndex = gameData.SlotIndex;
-        }
-
         public string GetSlotName(int slot) => $"{slotName}-{slot:D2}";
-        public string GetSerializedExtension() => SerializerFactory.Create(Persistence.serializer).Extension;
+        public string GetSerializedExtension() => Persistence.GetFileSystem().Serializer.Extension;
 
-        public async Awaitable<bool> IsContinueAvailable() => await HasLastSlotAvailable();
+        /// <summary>
+        /// Pretty data is human legible text file (like a pretty .json file).
+        /// </summary>
+        /// <returns>Whether should use a Pretty data.</returns>
+        public static bool IsAbleToUsePrettyData() => Debug.isDebugBuild;
 
-        public async Awaitable<bool> HasLastSlotAvailable()
-        {
-            var data = CreateInstance<T>();
-            var name = GetSlotName(LastSlotIndex);
-            var useRawFile = ShouldLoadFromRawFile();
-            return await Persistence.TryLoadAsync(data, name, useRawFile);
-        }
-
-        public async Awaitable<T> GetDataAsync(int slot)
-        {
-            var data = CreateInstance<T>();
-            var name = GetSlotName(slot);
-            var useRawFile = ShouldLoadFromRawFile();
-            var wasLoaded = await Persistence.TryLoadAsync(data, name, useRawFile);
-            return wasLoaded ? data : null;
-        }
-
+        #region SAVING
         public async Awaitable SaveAsync() => await SaveAsync(LastSlotIndex);
 
         public async Awaitable SaveAsync(int slot)
@@ -103,30 +76,107 @@ namespace ActionCode.GameDataSystem
             gameData.UpdateData(slot);
 
             var name = GetSlotName(slot);
+            var fileSystem = Persistence.GetFileSystem();
+            var savePrettyData = IsAbleToUsePrettyData();
 
-            await Persistence.SaveAsync(Data, name);
+            await fileSystem.SaveAsync(Data, name, savePrettyData);
             if (TryGetCloudProvider(out var cloudProvider))
             {
-                var stream = Persistence.LoadStream(name);
+                var stream = fileSystem.LoadStream(name);
                 await cloudProvider.SaveAsync(name, FileSystem.COMPRESSED_EXTENSION, stream);
             }
 
             LastSlotIndex = slot;
             OnSaveFinished?.Invoke();
         }
+        #endregion
 
-        /// <summary>
-        /// Uploads the current Game Data to the Cloud Service using Public Access so it can be download 
-        /// using <see cref="DownloadAsync(int, string, string, CloudProviderType)"/> function.
-        /// </summary>
-        /// <param name="name">The name of the file to save. Don't use special characters.</param>
-        /// <param name="cloudType">The Cloud Provider to use.</param>
-        /// <returns>An asynchronous operation.</returns>
+        #region LOADING
+        public async Awaitable<bool> IsContinueAvailable() => await HasLastSlotAvailable();
+        public async Awaitable<bool> HasLastSlotAvailable() => await TryLoadAsync(CreateInstance<T>(), LastSlotIndex);
+        public async Awaitable<bool> TryLoadAsync(int slot) => await TryLoadAsync(Data, slot);
+        public async Awaitable<bool> TryLoadAsync(string path) => await Persistence.GetFileSystem().TryLoadAsync(path, Data);
+
+        public async Awaitable<bool> TryLoadAsync(T data, int slot)
+        {
+            var name = GetSlotName(slot);
+            var usePrettyFile = IsAbleToUsePrettyData();
+            return await Persistence.GetFileSystem().TryLoadAsync(name, data, usePrettyFile);
+        }
+
+        public async Awaitable<bool> TryLoadFromLastSlotAsync()
+        {
+            Data.ResetData();
+            return await TryLoadAsync(LastSlotIndex);
+        }
+
+        public async Awaitable<T> GetDataAsync(int slot)
+        {
+            var data = CreateInstance<T>();
+            var wasLoaded = await TryLoadAsync(data, slot);
+            return wasLoaded ? data : null;
+        }
+
+        public void LoadData(T data)
+        {
+            // Cannot set SerializeField this.gameData = data;
+
+            var serializer = Persistence.GetFileSystem().Serializer;
+            var content = serializer.Serialize(data);
+
+            // SOs are designed to persist data between Scenes only in the Editor, not on Builds.
+            // In a Build, a SO resets its values when transitioning between Scenes if not referenced
+            // by any object in memory.
+
+            serializer.Deserialize(content, ref gameData);
+            LastSlotIndex = gameData.SlotIndex;
+        }
+
+        public async Awaitable<IList> LoadAllAsync()
+        {
+            var names = FileSystem.GetFileNames();
+            var slots = new T[names.Count()];
+            var fileSystem = Persistence.GetFileSystem();
+            var useCompressedFile = !IsAbleToUsePrettyData();
+
+            for (var i = 0; i < slots.Length; i++)
+            {
+                slots[i] = CreateInstance<T>();
+                var name = names.ElementAt(i);
+                await fileSystem.TryLoadAsync(name, slots[i], useCompressedFile);
+            }
+
+            return slots;
+        }
+        #endregion
+
+        #region DELETING
+        public async Awaitable DeleteAsync(int slot)
+        {
+            var name = GetSlotName(slot);
+            if (TryGetCloudProvider(out var provider))
+            {
+                var cloudName = FileSystem.GetCompressedName(name);
+                await provider.DeleteAsync(cloudName);
+            }
+
+            Persistence.GetFileSystem().Delete(name);
+        }
+
+        public async Awaitable DeleteAllAsync()
+        {
+            Persistence.GetFileSystem().DeleteAll();
+            if (TryGetCloudProvider(out var cloudProvider))
+                await cloudProvider.DeleteAllAsync();
+        }
+        #endregion
+
+        #region UPLOADING/DOWNLOADING        
         public async Awaitable UploadAsync(string name, CloudProviderType cloudType)
         {
             if (!TryGetCloudProvider(out var provider, cloudType)) return;
 
-            var serializer = persistence.GetFileSystem().Serializer;
+            var serializer = Persistence.GetFileSystem().Serializer;
             var data = serializer.Serialize(Data);
 
             await provider.UploadAsync(name, data);
@@ -138,61 +188,13 @@ namespace ActionCode.GameDataSystem
 
             var slotName = GetSlotName(slot);
             var content = await provider.DownloadAsync(name, playerId);
+            var savePrettyData = IsAbleToUsePrettyData();
 
-            await persistence.SaveAsync(slotName, content);
+            await Persistence.GetFileSystem().SaveAsync(content, slotName, savePrettyData);
         }
+        #endregion
 
-        public async Awaitable<bool> TryLoadAsync(string path) => await Persistence.TryLoadAsync(Data, path);
-
-        public async Awaitable<bool> TryLoadFromLastSlotAsync()
-        {
-            Data.ResetData();
-            return await TryLoadAsync(LastSlotIndex);
-        }
-
-        public async Awaitable<bool> TryLoadAsync(int slot)
-        {
-            var name = GetSlotName(slot);
-            var useRawFile = ShouldLoadFromRawFile();
-            return await Persistence.TryLoadAsync(Data, name, useRawFile);
-        }
-
-        public async Awaitable<IList> LoadAllAsync()
-        {
-            var names = Persistence.GetNames();
-            var slots = new T[names.Count()];
-
-            for (var i = 0; i < slots.Length; i++)
-            {
-                var slotName = names.ElementAt(i);
-                slots[i] = CreateInstance<T>();
-                await Persistence.TryLoadAsync(slots[i], slotName);
-            }
-
-            return slots;
-        }
-
-        public async Awaitable DeleteAsync(int slot)
-        {
-            var name = GetSlotName(slot);
-
-            if (TryGetCloudProvider(out var provider))
-            {
-                //TODO add FileSystem.GetSaveName()
-                var cloudName = System.IO.Path.ChangeExtension(name, FileSystem.COMPRESSED_EXTENSION);
-                await provider.DeleteAsync(cloudName);
-            }
-
-            Persistence.Delete(name);
-        }
-
-        public async Awaitable DeleteAllAsync()
-        {
-            Persistence.DeleteAll();
-            if (TryGetCloudProvider(out var provider))
-                await provider.DeleteAllAsync();
-        }
-
+        #region CLOUD PROVIDER
         /// <summary>
         /// Tries to get the Cloud Provider using the local <see cref="cloudProvider"/>.
         /// </summary>
@@ -206,16 +208,11 @@ namespace ActionCode.GameDataSystem
         /// <param name="provider"><inheritdoc cref="TryGetCloudProvider(out ICloudProvider)" path="/param[@name='provider']"/></param>
         /// <param name="providerType">The Cloud Provider to use.</param>
         /// <returns><inheritdoc cref="TryGetCloudProvider(out ICloudProvider)"/></returns>
-        public bool TryGetCloudProvider(out ICloudProvider provider, CloudProviderType providerType)
+        public static bool TryGetCloudProvider(out ICloudProvider provider, CloudProviderType providerType)
         {
             provider = CloudProviderFactory.Create(providerType);
             return provider != null && provider.IsAvailable();
         }
-
-        /// <summary>
-        /// Raw file is human legible file (the pretty .json)
-        /// </summary>
-        /// <returns>Whether should load from the Raw File.</returns>
-        public static bool ShouldLoadFromRawFile() => Debug.isDebugBuild;
+        #endregion        
     }
 }
