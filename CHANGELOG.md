@@ -7,10 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 
 ### Added
-- Public Cloud Save
-- Unity Cloud Provider
-- Cloud Save/Delete/Load from CloudProvider
-- GameDataBuildReseter
+- Public Cloud Upload/Download files
+- Unity Cloud Provider implementation
+- Cloud Save/Delete/Load/List from CloudProvider implementation.
+- GameDataBuildReseter. Resets the project GameData (if available) before the Build starts.
 
 ## [0.5.1] - 2025-10-11
 ### Fixes

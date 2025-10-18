@@ -61,8 +61,6 @@ namespace ActionCode.GameDataSystem
         public string GetSlotName(int slot) => $"{slotName}-{slot:D2}";
         public string GetSerializedExtension() => Persistence.GetFileSystem().Serializer.Extension;
 
-
-
         #region SAVING
         public async Awaitable SaveAsync() => await SaveAsync(LastSlotIndex);
 
@@ -164,25 +162,39 @@ namespace ActionCode.GameDataSystem
         }
         #endregion
 
-        #region UPLOADING/DOWNLOADING        
-        public async Awaitable UploadAsync(string name, CloudProviderType cloudType)
-        {
-            if (!TryGetCloudProvider(out var provider, cloudType)) return;
+        #region UPLOADING
+        public async Awaitable UploadAsync() => await UploadAsync(Data.SlotIndex);
+        public async Awaitable UploadAsync(int slot) => await UploadAsync(GetSlotName(slot), slot, cloudProvider);
 
-            var serializer = Persistence.GetFileSystem().Serializer;
-            var data = serializer.Serialize(Data);
-
-            await provider.UploadAsync(name, data);
-        }
-
-        public async Awaitable DownloadAsync(int slot, string name, string playerId, CloudProviderType cloudType)
+        public async Awaitable UploadAsync(string fileName, int slot, CloudProviderType cloudType)
         {
             if (!TryGetCloudProvider(out var provider, cloudType)) return;
 
             var slotName = GetSlotName(slot);
-            var content = await provider.DownloadAsync(name, playerId);
+            var content = await Persistence.GetFileSystem().LoadCompressedContentAsync(slotName);
+            await provider.UploadAsync(fileName, content);
+        }
+        #endregion
 
-            await Persistence.GetFileSystem().SaveAsync(content, slotName);
+        #region DOWNLOADING
+        public async Awaitable DownloadAsync(int slot, string cloudId) =>
+            await DownloadAsync(GetSlotName(slot), slot, cloudId, cloudProvider);
+
+        public async Awaitable DownloadAsync(string filename, int slot, string cloudId, CloudProviderType cloudType)
+        {
+            if (!TryGetCloudProvider(out var provider, cloudType)) return;
+
+            var data = CreateInstance<T>();
+            var content = await provider.DownloadAsync(filename, cloudId);
+            var isContentEmpty = string.IsNullOrEmpty(content);
+            if (isContentEmpty) throw new ArgumentException($"No file '{filename}' found on Cloud Provider '{cloudType}' Public Files.");
+
+            var fileSystem = Persistence.GetFileSystem();
+            await fileSystem.DeserializeAsync(data, content, isCompressed: true);
+
+            data.SlotIndex = slot;
+            var slotName = GetSlotName(slot);
+            await fileSystem.SaveAsync(data, slotName);
         }
         #endregion
 

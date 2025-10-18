@@ -81,11 +81,11 @@ namespace ActionCode.GameDataSystem
             await PlayerData.SaveAsync(remoteData, options);
         }
 
-        public async Awaitable<string> DownloadAsync(string name, string playerId)
+        public async Awaitable<string> DownloadAsync(string name, string cloudId)
         {
             await CheckSignInAsync();
 
-            var options = new LoadOptions(new PublicReadAccessClassOptions(playerId));
+            var options = new LoadOptions(new PublicReadAccessClassOptions(cloudId));
             var data = await PlayerData.LoadAsync(new HashSet<string> { name }, options);
             var wasLoaded = data.TryGetValue(name, out var remoteData);
 
@@ -105,7 +105,9 @@ namespace ActionCode.GameDataSystem
             }
             catch (System.Exception e)
             {
-                Debug.LogException(e);
+                // HttpException is a internal class, so we check the message instead.
+                var wasFileNotFound = e.Message.ToLower() == "file not found";
+                if (!wasFileNotFound) Debug.LogException(e);
             }
         }
 

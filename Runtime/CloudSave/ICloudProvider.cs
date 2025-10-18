@@ -72,8 +72,8 @@ namespace ActionCode.GameDataSystem
         /// Only files uploaded using Public Access can be downloaded.
         /// </summary>
         /// <param name="name"><inheritdoc cref="DeleteAsync(string)" path="/param[@name='name']"/></param>
-        /// <param name="playerId">Player ID to read from.</param>
+        /// <param name="cloudId">The cloud user identifier to read from.</param>
         /// <returns>An asynchronous operation.</returns>
-        Awaitable<string> DownloadAsync(string name, string playerId);
+        Awaitable<string> DownloadAsync(string name, string cloudId);
     }
 }

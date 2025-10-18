@@ -87,22 +87,28 @@ namespace ActionCode.GameDataSystem
         Awaitable DeleteAsync(int slot);
 
         /// <summary>
-        /// Uploads the current Game Data to the Cloud Service using Public Access so it can be 
-        /// downloaded later by any user.
-        /// </summary>
-        /// <param name="name">The name of the file to save. Don't use special characters.</param>
-        /// <param name="cloudType">The Cloud Provider to use.</param>
-        /// <returns>An asynchronous uploading operation.</returns>
-        Awaitable UploadAsync(string name, CloudProviderType cloudType);
-
-        /// <summary>
-        /// Downloads the Game Data from the Cloud Service.
+        /// 
         /// </summary>
         /// <param name="slot"><inheritdoc cref="GetSlotName(int)" path="/param[@name='slot']"/></param>
-        /// <param name="name"><inheritdoc cref="UploadAsync(string, CloudProviderType)" path="/param[@name='name']"/></param>
-        /// <param name="playerId">The player identified used to upload the data.</param>
-        /// <param name="cloudType"><inheritdoc cref="UploadAsync(string, CloudProviderType)" path="/param[@name='cloudType']"/></param>
+
+        /// <summary>
+        /// Uploads the Game Data from the given slot to the Cloud using the given filename. 
+        /// The file uses Public Access so it can be downloaded later by other user.
+        /// </summary>
+        /// <param name="fileName">The name of the file saved on the cloud.</param>
+        /// <param name="slot">The slot index used to send the Game Data to the cloud.</param>
+        /// <param name="cloudType">The Cloud Provider to use.</param>
+        /// <returns>An asynchronous uploading operation.</returns>
+        Awaitable UploadAsync(string fileName, int slot, CloudProviderType cloudType);
+
+        /// <summary>
+        /// Downloads a Game Data file from the Cloud and replaces the local one (if any) using the given slot.
+        /// </summary>
+        /// <param name="filename"><inheritdoc cref="UploadAsync(string, int, CloudProviderType)" path="/param[@name='filename']"/></param>
+        /// <param name="slot"><inheritdoc cref="GetSlotName(int)" path="/param[@name='slot']"/></param>
+        /// <param name="cloudId">The cloud user identified used to upload the data.</param>
+        /// <param name="cloudType"><inheritdoc cref="UploadAsync(string, int, CloudProviderType)" path="/param[@name='cloudType']"/></param>
         /// <returns>An asynchronous downloading operation.</returns>
-        Awaitable DownloadAsync(int slot, string name, string playerId, CloudProviderType cloudType);
+        Awaitable DownloadAsync(string filename, int slot, string cloudId, CloudProviderType cloudType);
     }
 }
