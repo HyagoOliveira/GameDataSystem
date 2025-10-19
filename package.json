@@ -21,6 +21,6 @@
     "email": "hyagogow@gmail.com"
   },
   "dependencies": {
-    "com.actioncode.persistence": "4.0.0"
+    "com.actioncode.persistence": "5.0.0"
   }
 }

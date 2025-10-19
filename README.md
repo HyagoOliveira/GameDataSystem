@@ -5,7 +5,7 @@
 * Current version: **0.5.1**
 * License: **MIT**
 * Dependencies:
-	- [com.actioncode.persistence : 4.0.0](https://github.com/HyagoOliveira/Persistence/tree/4.0.0/)
+	- [com.actioncode.persistence : 5.0.0](https://github.com/HyagoOliveira/Persistence/tree/5.0.0/)
 
 ## Summary
 

@@ -12,6 +12,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Cloud Save/Delete/Load/List from CloudProvider implementation.
 - GameDataBuildReseter. Resets the project GameData (if available) before the Build starts.
 
+### Changed
+- Update Persistence package to 5.0.0
+
 ## [0.5.1] - 2025-10-11
 ### Fixes
 - Code fixes
