@@ -87,28 +87,23 @@ namespace ActionCode.GameDataSystem
         Awaitable DeleteAsync(int slot);
 
         /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="slot"><inheritdoc cref="GetSlotName(int)" path="/param[@name='slot']"/></param>
-
-        /// <summary>
         /// Uploads the Game Data from the given slot to the Cloud using the given filename. 
         /// The file uses Public Access so it can be downloaded later by other user.
         /// </summary>
-        /// <param name="fileName">The name of the file saved on the cloud.</param>
+        /// <param name="filename">The name of the file that will be saved on the cloud.</param>
         /// <param name="slot">The slot index used to send the Game Data to the cloud.</param>
-        /// <param name="cloudType">The Cloud Provider to use.</param>
+        /// <param name="provider">The Cloud Provider to use.</param>
         /// <returns>An asynchronous uploading operation.</returns>
-        Awaitable UploadAsync(string fileName, int slot, CloudProviderType cloudType);
+        Awaitable UploadAsync(string filename, int slot, ICloudProvider provider);
 
         /// <summary>
         /// Downloads a Game Data file from the Cloud and replaces the local one (if any) using the given slot.
         /// </summary>
-        /// <param name="filename"><inheritdoc cref="UploadAsync(string, int, CloudProviderType)" path="/param[@name='filename']"/></param>
+        /// <param name="filename"><inheritdoc cref="UploadAsync(string, int, ICloudProvider)" path="/param[@name='filename']"/></param>
         /// <param name="slot"><inheritdoc cref="GetSlotName(int)" path="/param[@name='slot']"/></param>
         /// <param name="cloudId">The cloud user identified used to upload the data.</param>
-        /// <param name="cloudType"><inheritdoc cref="UploadAsync(string, int, CloudProviderType)" path="/param[@name='cloudType']"/></param>
+        /// <param name="provider"><inheritdoc cref="UploadAsync(string, int, ICloudProvider)" path="/param[@name='provider']"/></param>
         /// <returns>An asynchronous downloading operation.</returns>
-        Awaitable DownloadAsync(string filename, int slot, string cloudId, CloudProviderType cloudType);
+        Awaitable DownloadAsync(string filename, int slot, string cloudId, ICloudProvider provider);
     }
 }

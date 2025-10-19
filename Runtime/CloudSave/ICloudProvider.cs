@@ -10,10 +10,10 @@ namespace ActionCode.GameDataSystem
     public interface ICloudProvider
     {
         /// <summary>
-        /// Returns the current player Cloud ID.
+        /// Returns the current cloud user identifier.
         /// </summary>
         /// <returns>An asynchronous operation.</returns>
-        Awaitable<string> GetPlayerId();
+        Awaitable<string> GetUserIdAsync();
 
         /// <summary>
         /// Whether the cloud provider is available.
@@ -60,7 +60,7 @@ namespace ActionCode.GameDataSystem
         Awaitable<List<string>> LoadAllNamesAsync();
 
         /// <summary>
-        /// Uploads the given data content using Public Access so it can be download for other players.
+        /// Uploads the given data content using Public Access so it can be download for other users.
         /// </summary>
         /// <param name="name"><inheritdoc cref="DeleteAsync(string)" path="/param[@name='name']"/></param>
         /// <param name="content">The data content.</param>
@@ -68,12 +68,12 @@ namespace ActionCode.GameDataSystem
         Awaitable UploadAsync(string name, string content);
 
         /// <summary>
-        /// Downloads a file from the cloud provider using the given file name and the player id. 
+        /// Downloads a file from the cloud provider using the given file name and the user id. 
         /// Only files uploaded using Public Access can be downloaded.
         /// </summary>
         /// <param name="name"><inheritdoc cref="DeleteAsync(string)" path="/param[@name='name']"/></param>
-        /// <param name="cloudId">The cloud user identifier to read from.</param>
+        /// <param name="userId">The cloud user identifier to read from.</param>
         /// <returns>An asynchronous operation.</returns>
-        Awaitable<string> DownloadAsync(string name, string cloudId);
+        Awaitable<string> DownloadAsync(string name, string userId);
     }
 }

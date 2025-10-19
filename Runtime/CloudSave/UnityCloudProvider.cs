@@ -18,7 +18,9 @@ namespace ActionCode.GameDataSystem
         public static IPlayerDataService PlayerData => CloudSaveService.Instance.Data.Player;
         public static IPlayerFilesService PlayerFiles => CloudSaveService.Instance.Files.Player;
 
-        public async Awaitable<string> GetPlayerId()
+        public override string ToString() => "Unity Cloud Save";
+
+        public async Awaitable<string> GetUserIdAsync()
         {
             await CheckSignInAsync();
             return AuthenticationService.Instance.PlayerId;
@@ -81,11 +83,11 @@ namespace ActionCode.GameDataSystem
             await PlayerData.SaveAsync(remoteData, options);
         }
 
-        public async Awaitable<string> DownloadAsync(string name, string cloudId)
+        public async Awaitable<string> DownloadAsync(string name, string userId)
         {
             await CheckSignInAsync();
 
-            var options = new LoadOptions(new PublicReadAccessClassOptions(cloudId));
+            var options = new LoadOptions(new PublicReadAccessClassOptions(userId));
             var data = await PlayerData.LoadAsync(new HashSet<string> { name }, options);
             var wasLoaded = data.TryGetValue(name, out var remoteData);
 

@@ -163,13 +163,11 @@ namespace ActionCode.GameDataSystem
         #endregion
 
         #region UPLOADING
-        public async Awaitable UploadAsync() => await UploadAsync(Data.SlotIndex);
-        public async Awaitable UploadAsync(int slot) => await UploadAsync(GetSlotName(slot), slot, cloudProvider);
+        public async Awaitable UploadAsync(string fileName, ICloudProvider provider) =>
+            await UploadAsync(fileName, Data.SlotIndex, provider);
 
-        public async Awaitable UploadAsync(string fileName, int slot, CloudProviderType cloudType)
+        public async Awaitable UploadAsync(string fileName, int slot, ICloudProvider provider)
         {
-            if (!TryGetCloudProvider(out var provider, cloudType)) return;
-
             var slotName = GetSlotName(slot);
             var content = await Persistence.GetFileSystem().LoadCompressedContentAsync(slotName);
             await provider.UploadAsync(fileName, content);
@@ -177,17 +175,12 @@ namespace ActionCode.GameDataSystem
         #endregion
 
         #region DOWNLOADING
-        public async Awaitable DownloadAsync(int slot, string cloudId) =>
-            await DownloadAsync(GetSlotName(slot), slot, cloudId, cloudProvider);
-
-        public async Awaitable DownloadAsync(string filename, int slot, string cloudId, CloudProviderType cloudType)
+        public async Awaitable DownloadAsync(string filename, int slot, string cloudId, ICloudProvider provider)
         {
-            if (!TryGetCloudProvider(out var provider, cloudType)) return;
-
             var data = CreateInstance<T>();
             var content = await provider.DownloadAsync(filename, cloudId);
             var isContentEmpty = string.IsNullOrEmpty(content);
-            if (isContentEmpty) throw new Exception($"Player '{cloudId}' does not have a Public File '{filename}' on Cloud Provider '{cloudType}'.");
+            if (isContentEmpty) throw new Exception($"Player '{cloudId}' does not have a Public File '{filename}' for '{provider}' Provider.");
 
             var fileSystem = Persistence.GetFileSystem();
             await fileSystem.DeserializeAsync(data, content, isCompressed: true);
@@ -199,6 +192,14 @@ namespace ActionCode.GameDataSystem
         #endregion
 
         #region CLOUD PROVIDER
+        public async Awaitable<string> GetUserIdAsync() => await GetUserIdAsync(cloudProvider);
+
+        public async Awaitable<string> GetUserIdAsync(CloudProviderType type)
+        {
+            if (!TryGetCloudProvider(out var provider, type)) return string.Empty;
+            return await provider.GetUserIdAsync();
+        }
+
         /// <summary>
         /// Tries to get the Cloud Provider using the local <see cref="cloudProvider"/>.
         /// </summary>
