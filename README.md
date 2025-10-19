@@ -138,16 +138,16 @@ No code change is necessary. You can use the current code to save and delete dat
 
 ### File Upload/Download
 
-You can upload the Game Data from the given slot to the Cloud. The file uses Public Access so it can be downloaded later by other user.
+You can upload a Game Data file from a given slot to the Cloud. The file will be uploaded using Public Access so it can be downloaded later by other user.
 
-Use the asynchronous functions `UploadAsync` and `DownloadAsync`.
+Use the asynchronous functions `UploadAsync` and `DownloadAsync`:
 
 ```csharp
  private async void OnUploadClicked()
  {
      try
      {
-         await dataManager.UploadAsync(); // Uploads the current GameData into the Cloud, using your Cloud user id
+         await dataManager.UploadAsync(); // Uploads the current GameData into the Cloud, using your Cloud User Id
      }
      catch (Exception e)
      {
@@ -160,8 +160,8 @@ private async void OnDownloadClicked()
     try
     {
 		var slot = 0;
-		var cloudId = "C5ispOuuUIed0UwYoYR6XlJ3nlmt";		
-        await dataManager.DownloadAsync(slot, cloudId); // Downloads the CloudData and places it into the slot 0
+		var userId = await dataManager.GetUserIdAsync(); // Or use the Cloud Id from other User
+        await dataManager.DownloadAsync(slot, userId); // Downloads the CloudData and places it into the slot 0
         var wasLoaded = await dataManager.TryLoadAsync(slot); // Loads from the slot 0
     }
     catch (Exception e)

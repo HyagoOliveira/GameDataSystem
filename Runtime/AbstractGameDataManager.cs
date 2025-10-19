@@ -163,18 +163,50 @@ namespace ActionCode.GameDataSystem
         #endregion
 
         #region UPLOADING
-        public async Awaitable UploadAsync(string fileName, ICloudProvider provider) =>
-            await UploadAsync(fileName, Data.SlotIndex, provider);
+        /// <summary>
+        /// Uploads the current Game Data to the Cloud. 
+        /// The file uses Public Access so it can be downloaded later by other user.
+        /// </summary>
+        /// <returns><inheritdoc cref="UploadAsync(string, int, ICloudProvider)"/></returns>
+        public async Awaitable UploadAsync()
+        {
+            if (!TryGetCloudProvider(out var provider)) return;
+            var filename = GetSlotName(Data.SlotIndex);
+            await UploadAsync(filename, provider);
+        }
 
-        public async Awaitable UploadAsync(string fileName, int slot, ICloudProvider provider)
+        /// <summary>
+        /// Uploads the current Game Data to the Cloud using the given filename. 
+        /// The file uses Public Access so it can be downloaded later by other user.
+        /// </summary>
+        /// <param name="filename"><inheritdoc cref="UploadAsync(string, int, ICloudProvider)" path="/param[@name='filename']"/></param>
+        /// <param name="provider"><inheritdoc cref="UploadAsync(string, int, ICloudProvider)" path="/param[@name='provider']"/></param>
+        /// <returns><inheritdoc cref="UploadAsync(string, int, ICloudProvider)"/></returns> 
+        public async Awaitable UploadAsync(string filename, ICloudProvider provider) =>
+            await UploadAsync(filename, Data.SlotIndex, provider);
+
+        public async Awaitable UploadAsync(string filename, int slot, ICloudProvider provider)
         {
             var slotName = GetSlotName(slot);
             var content = await Persistence.GetFileSystem().LoadCompressedContentAsync(slotName);
-            await provider.UploadAsync(fileName, content);
+            await provider.UploadAsync(filename, content);
         }
         #endregion
 
         #region DOWNLOADING
+        /// <summary>
+        /// Downloads a Game Data file from the Cloud and replaces the local one (if any) using the given slot.
+        /// </summary>
+        /// <param name="slot"><inheritdoc cref="DownloadAsync(string, int, string, ICloudProvider)" path="/param[@name='slot']"/></param>
+        /// <param name="cloudId"><inheritdoc cref="DownloadAsync(string, int, string, ICloudProvider)" path="/param[@name='cloudId']"/></param>
+        /// <returns><inheritdoc cref="DownloadAsync(string, int, string, ICloudProvider)"/></returns>
+        public async Awaitable DownloadAsync(int slot, string cloudId)
+        {
+            if (!TryGetCloudProvider(out var provider)) return;
+            var fileName = GetSlotName(slot);
+            await DownloadAsync(fileName, slot, cloudId, provider);
+        }
+
         public async Awaitable DownloadAsync(string filename, int slot, string cloudId, ICloudProvider provider)
         {
             var data = CreateInstance<T>();
