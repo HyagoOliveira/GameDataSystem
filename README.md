@@ -149,6 +149,8 @@ To persist data in the Cloud, just select the Cloud Provider in the GameDataMana
 
 No code change is necessary. You can use the current code to save and delete data. Loading is done just locally for now.
 
+Check the Cloud Save Dashboard from the selected implementation to see the saved files.
+
 ### File Upload/Download
 
 You can upload a Game Data file from a given slot to the Cloud. The file will be uploaded using Public Access so it can be downloaded later by other user.
