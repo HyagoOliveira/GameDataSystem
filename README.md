@@ -9,11 +9,13 @@
 
 ## Summary
 
-System to manager local and cloud-based CRUD (CReate, Update, Delete) operations into a serialized Game Data ScriptableObject object.
+System to manager local and cloud CRUD (CReate, Update, Delete) operations into a serialized Game Data ScriptableObject object based on slot indexes.
 
-The serialized class is based in a slot-index so you can Save, Load and Delete Game Data files, both locally and remotely in the cloud.
+You can Save, Load and Delete the Game Data files, both locally and remotely based on a Cloud Provider implementation.
 
-To start to persist data, you need first to create a serialized Game Data class and a GameDataManager to manager this class.
+On Builds, all the files are encrypted and compressed using the [Persistence](https://github.com/HyagoOliveira/Persistence) package. You can choose which serialization method to use (Json, XML or Binary).
+
+To start to persisting data, you need first to create a serialized GameData class and a GameDataManager to manager this class.
 
 ## Creating Serialized Assets
 
@@ -38,13 +40,24 @@ Create an asset for the `GameData`.
 
 ![The GameData Asset](/Docs~/GameData.png "The GameData Asset")
 
-Those serialized fields are based in a commom slot based GameData file. No need to set them. The Game Data Manager will fill them.
+The serialized fields are based in a commom slot based GameData file. No need to set them manually because the Game Data Manager will do that.
 
 In large projects, you can easily find the GameData asset by going into the Tools > Find > GameData.
 
 ![The Find Game Data](/Docs~/FindGameData.png "Find Game Data")
 
-You can referenciate and use the `GameData` asset in every gameplay component that needs to use the persistent data.
+You should use the `GameData` asset in every gameplay component that needs to load from it:
+
+```csharp
+[SerializeField] private GameData data;
+[SerializeField] private Text highScore;
+
+private void ShowHighScore() => highScore.value = data.HighScore;
+```
+
+> Be careful when using GameObjects loaded from Addressables! 
+
+Addressables System loads the instance based when the files group were build. If the GameDataManager updates the GameData during runtime, those changes will not be present on the GameData referenciated by your GameObject dynamically loaded from Addressable when the game is running from Builds.
 
 ### Creating the Game Data Manager
 
@@ -68,7 +81,7 @@ Create an asset for the `GameDataManager`.
 
 Link your GameData and a PersistenceSettings asset. Check [Creating the Persistence Settings](https://github.com/HyagoOliveira/Persistence?tab=readme-ov-file#creating-the-persistence-settings) for more details.
 
-In the Editor, use the Game Data Manager buttons to locally Save, Load (also from a file) and Delete the referenced GameData, using the Current Slot to do the operation.
+In the Editor, use the Game Data Manager buttons to locally Save, Load (also from a file) and Delete the referenced GameData. Save, Load and Delete buttons use the Current Slot to do the operation. The Load File button will load a normal or encrypted file into the Current Slot as well.
 
 > Cloud Data persistence will not work using those buttons since the game should be running.
 
@@ -126,7 +139,7 @@ public class GameDataController : MonoBehaviour
 
 Always use a `try-catch` block to handling exceptions that may happen when saving, loading or deleting.
 
-Following those [instructions](https://github.com/HyagoOliveira/Persistence?tab=readme-ov-file#checking-the-persisted-data) to know how to checking the Persisted Data.
+Following those [instructions](https://github.com/HyagoOliveira/Persistence?tab=readme-ov-file#checking-the-persisted-data) to know how to check the Persisted Data.
 
 ## Cloud Save
 
