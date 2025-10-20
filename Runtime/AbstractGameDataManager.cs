@@ -30,12 +30,12 @@ namespace ActionCode.GameDataSystem
         /// <summary>
         /// Event fired when the Saving process starts.
         /// </summary>
-        public event Action OnSaveStarted;
+        public static event Action OnSaveStarted;
 
         /// <summary>
         /// Event fired when the Saving process finishes.
         /// </summary>
-        public event Action OnSaveFinished;
+        public static event Action OnSaveFinished;
 
         /// <summary>
         /// The Game data.
