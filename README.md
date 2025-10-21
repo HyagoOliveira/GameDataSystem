@@ -2,7 +2,7 @@
 
 * Game Data Serialization for Unity Games
 * Unity minimum version: **6000.1**
-* Current version: **1.0.0**
+* Current version: **1.1.0**
 * License: **MIT**
 * Dependencies:
 	- [com.actioncode.persistence : 5.0.0](https://github.com/HyagoOliveira/Persistence/tree/5.0.0/)
