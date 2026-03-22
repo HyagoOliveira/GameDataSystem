@@ -62,6 +62,7 @@ namespace ActionCode.GameDataSystem
         public string GetSerializedExtension() => Persistence.GetFileSystem().Serializer.Extension;
 
         #region SAVING
+        public void Save() => _ = SaveAsync();
         public async Awaitable SaveAsync() => await SaveAsync(LastSlotIndex);
 
         public async Awaitable SaveAsync(int slot)
