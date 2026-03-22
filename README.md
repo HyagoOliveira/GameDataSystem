@@ -1,8 +1,8 @@
 # Game Data System
 
 * Game Data Serialization for Unity Games
-* Unity minimum version: **6000.1**
-* Current version: **1.1.0**
+* Unity minimum version: **6000.3**
+* Current version: **1.2.0**
 * License: **MIT**
 
 ## Summary
