@@ -1,8 +1,8 @@
-using System;
-using System.Linq;
-using System.Collections;
-using UnityEngine;
 using ActionCode.Persistence;
+using System;
+using System.Collections;
+using System.Linq;
+using UnityEngine;
 
 namespace ActionCode.GameDataSystem
 {
@@ -60,6 +60,24 @@ namespace ActionCode.GameDataSystem
 
         public string GetSlotName(int slot) => $"{slotName}-{slot:D2}";
         public string GetSerializedExtension() => Persistence.GetFileSystem().Serializer.Extension;
+
+        #region CREATING
+        public async Awaitable<T> CreateAsync(int slot)
+        {
+            var data = CreateInstance<T>();
+            await CreateAsync(data, slot);
+            return data;
+        }
+
+        public async Awaitable CreateAsync(T data, int slot)
+        {
+            data.SlotIndex = slot;
+            data.Validate();
+
+            LoadData(data);
+            await SaveAsync(slot);
+        }
+        #endregion
 
         #region SAVING
         public void Save() => _ = SaveAsync();
