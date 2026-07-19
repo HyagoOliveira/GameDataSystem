@@ -5,6 +5,7 @@ namespace ActionCode.GameDataSystem
     [Serializable]
     public sealed class GameSettings
     {
+        public bool IsGamepadRumble = true;
         public string LanguageCode;
         public AudioData Audio = new();
         //TODO other settings

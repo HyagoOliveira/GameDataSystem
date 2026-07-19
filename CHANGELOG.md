@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 ### Added
+- Is Gamepad Rumble flag
 - Data validation
 
 ## [1.2.0] - 2026-03-22
