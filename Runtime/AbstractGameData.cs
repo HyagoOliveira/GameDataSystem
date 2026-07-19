@@ -36,7 +36,10 @@ namespace ActionCode.GameDataSystem
             var className = GetType().Name;
             var copy = CreateInstance(className) as AbstractGameData;
             var json = JsonUtility.ToJson(this);
+
             JsonUtility.FromJsonOverwrite(json, copy);
+            copy.Validate();
+
             return copy;
         }
 
@@ -47,6 +50,8 @@ namespace ActionCode.GameDataSystem
             var json = JsonUtility.ToJson(data);
             JsonUtility.FromJsonOverwrite(json, this);
         }
+
+        public virtual void Validate() => Settings.Validate();
 
         public override string ToString() => GetDisplayName();
         public virtual string GetDisplayName() => $"Game Data {SlotIndex:D2}";

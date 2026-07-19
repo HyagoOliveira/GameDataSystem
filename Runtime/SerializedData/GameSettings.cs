@@ -8,5 +8,10 @@ namespace ActionCode.GameDataSystem
         public string LanguageCode;
         public AudioData Audio = new();
         //TODO other settings
+
+        public void Validate()
+        {
+            if (string.IsNullOrEmpty(LanguageCode)) LanguageCode = "en";
+        }
     }
 }
