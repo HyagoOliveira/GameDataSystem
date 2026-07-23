@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - Debug messages in button actions from GameDataManager Editor
 
+### Changed
+- Improve Game Data Manager Create functions
+
 ## [1.3.0] - 2026-07-19
 ### Added
 - Game Data Manager Create functions

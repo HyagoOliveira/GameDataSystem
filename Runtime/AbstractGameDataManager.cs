@@ -62,18 +62,14 @@ namespace ActionCode.GameDataSystem
         public string GetSerializedExtension() => Persistence.GetFileSystem().Serializer.Extension;
 
         #region CREATING
-        public async Awaitable<T> CreateAsync(int slot)
+        public async Awaitable CreateAsync(int slot)
         {
             var data = CreateInstance<T>();
             await CreateAsync(data, slot);
-            return data;
         }
 
         public async Awaitable CreateAsync(T data, int slot)
         {
-            data.SlotIndex = slot;
-            data.Validate();
-
             LoadData(data);
             await SaveAsync(slot);
         }

@@ -40,6 +40,7 @@ namespace ActionCode.GameDataSystem
             Version.Update();
 
             OnUpdated?.Invoke();
+            Validate();
         }
 
         public AbstractGameData Copy()
@@ -62,8 +63,6 @@ namespace ActionCode.GameDataSystem
             JsonUtility.FromJsonOverwrite(json, this);
         }
 
-        public virtual void Validate() => Settings.Validate();
-
         public override string ToString() => GetDisplayName();
         public virtual string GetDisplayName() => $"Game Data {SlotIndex:D2}";
 
@@ -75,5 +74,7 @@ namespace ActionCode.GameDataSystem
 
             return $"{hours:D2}:{minutes:D2}:{seconds:D2}";
         }
+
+        protected virtual void Validate() => Settings.Validate();
     }
 }
