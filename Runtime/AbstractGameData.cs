@@ -5,7 +5,18 @@ namespace ActionCode.GameDataSystem
 {
     /// <summary>
     /// Abstract base class to persist Game Data.
+    /// Referenciate this asset in any Component that needs to Save or Load data at some point.
     /// </summary>
+    /// <remarks>
+    /// Subscribe to the <see cref=".OnUpdated"/> event to handle saving data.<br/>
+    /// There, you can change any value inside your GameData reference. Those values will be persisted as the final step in the Saving Process.
+    /// <para>
+    /// <b>DO NOT REFERENCIATE THIS ASSET INSIDE ADDRESSABLES PREFABS!</b><br/>
+    /// Inside Builds, Addressables Prefabs uses asset references (include ScriptableObjects in this case) when the Prefab was build.<br/>
+    /// This means that the Components referenciating this asset will use the data when the Prefab was build, not the updated one you see in the Inspector.<br/>
+    /// To fix it, use a reference to the <see cref="AbstractGameDataManager.Data"/> or update the Data yourself.
+    /// </para>
+    /// </remarks>
     public abstract class AbstractGameData : ScriptableObject
     {
         // All fields should be public and named in CamelCase (including inner classes)
