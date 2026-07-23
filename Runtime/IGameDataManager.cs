@@ -1,5 +1,5 @@
-using UnityEngine;
 using ActionCode.Persistence;
+using UnityEngine;
 
 namespace ActionCode.GameDataSystem
 {
@@ -61,7 +61,7 @@ namespace ActionCode.GameDataSystem
         Awaitable<bool> TryLoadAsync(int slot);
 
         /// <summary>
-        /// Tries to load the Game Data from the given path.
+        /// Tries to load the Game Data from the given path, no mater if the file is encrypted or not.
         /// </summary>
         /// <param name="path">The file path.</param>
         /// <returns>An asynchronous loading operation.</returns>

@@ -1,6 +1,6 @@
+using ActionCode.Persistence;
 using UnityEditor;
 using UnityEngine;
-using ActionCode.Persistence;
 
 namespace ActionCode.GameDataSystem.Editor
 {
@@ -45,13 +45,52 @@ namespace ActionCode.GameDataSystem.Editor
         private void DrawButtons()
         {
             EditorGUILayout.BeginHorizontal();
-            if (IsButtonDown("Save")) manager.SaveAsync(currentSlot);
-            if (IsButtonDown("Load")) manager.TryLoadAsync(currentSlot);
-            if (IsButtonDown("Load File")) manager.TryLoadAsync(GetSaveFilePath());
-            if (IsButtonDown("Delete")) manager.DeleteAsync(currentSlot);
+            if (IsButtonDown("Save")) SaveCurrentSlot();
+            if (IsButtonDown("Load")) LoadCurrentSlot();
+            if (IsButtonDown("Load File")) LoadFile();
+            if (IsButtonDown("Delete")) DeleteCurrentSlot();
             EditorGUILayout.EndHorizontal();
 
-            if (IsButtonDown("Delete All")) manager.DeleteAllAsync();
+            if (IsButtonDown("Delete All")) DeleteAllSlots();
+        }
+
+        private async void SaveCurrentSlot()
+        {
+            await manager.SaveAsync(currentSlot);
+            Debug.Log($"Data {manager.GetSlotName(currentSlot)} was saved.");
+        }
+
+        private async void LoadCurrentSlot()
+        {
+            var wasLoaded = await manager.TryLoadAsync(currentSlot);
+            if (wasLoaded) Debug.Log($"Data {manager.GetSlotName(currentSlot)} was loaded.");
+            else Debug.LogError($"Data {manager.GetSlotName(currentSlot)} could not be loaded. Check if file exists.");
+        }
+
+        private async void LoadFile()
+        {
+            try
+            {
+                await manager.TryLoadAsync(GetSaveFilePath());
+                Debug.Log("Data was loaded from the selected file.");
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError("Data could not be loaded from the selected file.");
+                Debug.LogError(e);
+            }
+        }
+
+        private async void DeleteCurrentSlot()
+        {
+            await manager.DeleteAsync(currentSlot);
+            Debug.Log($"Data {manager.GetSlotName(currentSlot)} was deleted.");
+        }
+
+        private async void DeleteAllSlots()
+        {
+            await manager.DeleteAllAsync();
+            Debug.Log("All Slots deleted.");
         }
 
         private void DrawOpenSaveFolderButton()
